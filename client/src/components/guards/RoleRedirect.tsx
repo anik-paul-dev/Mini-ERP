@@ -1,4 +1,4 @@
-import React from 'react'; // Added to trigger TS reload
+// Added to trigger TS reload
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -22,3 +22,4 @@ const RoleRedirect = () => {
 };
 
 export default RoleRedirect;
+

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useApi } from '../../hooks/useApi';
 import DataTable from '../../components/ui/DataTable';
@@ -98,3 +98,4 @@ const Products = () => {
 };
 
 export default Products;
+

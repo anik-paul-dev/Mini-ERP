@@ -94,4 +94,17 @@ export interface ChatContact {
   publicId: string;
   name: string;
   avatar: string;
+  roleName?: string;
+  lastMessage?: string;
+  lastMessageAt?: string | null;
+  unreadCount?: number;
+}
+
+export interface NotificationItem {
+  id: string;
+  type: string;
+  title: string;
+  message: string;
+  read: boolean;
+  createdAt: string;
 }

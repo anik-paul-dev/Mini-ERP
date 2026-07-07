@@ -1,4 +1,3 @@
-import React from 'react';
 import { Outlet, Navigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
@@ -23,3 +22,4 @@ const DashboardLayout = () => {
 };
 
 export default DashboardLayout;
+

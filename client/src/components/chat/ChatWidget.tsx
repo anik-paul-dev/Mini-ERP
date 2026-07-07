@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { ArrowLeft, Search, Send, X } from 'lucide-react';
 import { useSocket } from '../../hooks/useSocket';
 import { useApi } from '../../hooks/useApi';
 import { useAuth } from '../../hooks/useAuth';
 import { ChatMessage, ChatContact } from '../../types';
-import { X, Send, User as UserIcon } from 'lucide-react';
 import { getInitials } from '../../utils/helpers';
 
 interface ChatWidgetProps {
@@ -14,14 +14,28 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ onClose }) => {
   const { user } = useAuth();
   const { socket, isConnected } = useSocket();
   const { get, post } = useApi();
-  
+
   const [contacts, setContacts] = useState<ChatContact[]>([]);
   const [activeContact, setActiveContact] = useState<ChatContact | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
-  const [loading, setLoading] = useState(false);
-  
+  const [searchTerm, setSearchTerm] = useState('');
+  const [contactsLoading, setContactsLoading] = useState(false);
+  const [messagesLoading, setMessagesLoading] = useState(false);
+  const [sending, setSending] = useState(false);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const filteredContacts = useMemo(() => {
+    const search = searchTerm.trim().toLowerCase();
+    if (!search) return contacts;
+
+    return contacts.filter((contact) =>
+      [contact.name, contact.roleName, contact.lastMessage]
+        .filter(Boolean)
+        .some((value) => value!.toLowerCase().includes(search))
+    );
+  }, [contacts, searchTerm]);
 
   useEffect(() => {
     fetchContacts();
@@ -31,177 +45,217 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ onClose }) => {
     if (activeContact) {
       fetchMessages(activeContact.publicId);
     }
-  }, [activeContact]);
+  }, [activeContact?.publicId]);
 
   useEffect(() => {
-    if (socket) {
-      socket.on('chat:receive', (msg: ChatMessage) => {
-        // If message is from active contact or we sent it, add to current list
-        if (
-          activeContact && 
-          (msg.senderPublicId === activeContact.publicId || msg.senderPublicId === user?.publicId)
-        ) {
-          setMessages(prev => [...prev, msg]);
-        } else {
-          // Refresh contacts if message from someone else to show unread (simplified)
-          fetchContacts();
-        }
-      });
-    }
+    if (!socket) return;
+
+    const handleReceive = (msg: ChatMessage) => {
+      if (activeContact && msg.senderPublicId === activeContact.publicId) {
+        setMessages((prev) => (prev.some((item) => item.publicId === msg.publicId) ? prev : [...prev, msg]));
+      }
+
+      fetchContacts();
+    };
+
+    socket.on('chat:receive', handleReceive);
 
     return () => {
-      if (socket) {
-        socket.off('chat:receive');
-      }
+      socket.off('chat:receive', handleReceive);
     };
-  }, [socket, activeContact, user]);
+  }, [socket, activeContact?.publicId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   const fetchContacts = async () => {
+    setContactsLoading(true);
     try {
-      const data = await get<ChatContact[]>('/chat/contacts');
+      const data = await get<ChatContact[]>('/chat/contacts', { showErrorToast: false });
       if (data) setContacts(data);
     } catch (error) {
-      console.error('Failed to fetch contacts');
+      console.error('Failed to fetch contacts', error);
+    } finally {
+      setContactsLoading(false);
     }
   };
 
-  const fetchMessages = async (contactId: string) => {
-    setLoading(true);
+  const fetchMessages = async (contactPublicId: string) => {
+    setMessagesLoading(true);
     try {
-      const data = await get<ChatMessage[]>(`/chat/${contactId}`);
-      if (data) setMessages(data);
+      const data = await get<ChatMessage[]>(`/chat/${contactPublicId}`, { showErrorToast: false });
+      setMessages(data || []);
+      fetchContacts();
     } catch (error) {
-      console.error('Failed to fetch messages');
+      console.error('Failed to fetch messages', error);
     } finally {
-      setLoading(false);
+      setMessagesLoading(false);
     }
   };
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !activeContact) return;
+    const message = newMessage.trim();
+    if (!message || !activeContact || sending) return;
 
+    setSending(true);
     try {
-      const msg = await post<ChatMessage>('/chat', {
-        receiverPublicId: activeContact.publicId,
-        message: newMessage,
-      }, { showErrorToast: false });
-      
+      const msg = await post<ChatMessage>(
+        '/chat',
+        {
+          receiverPublicId: activeContact.publicId,
+          message,
+        },
+        { showErrorToast: true }
+      );
+
       if (msg) {
-        // Optimistically add message
-        setMessages(prev => [...prev, msg]);
+        setMessages((prev) => [...prev, msg]);
         setNewMessage('');
+        fetchContacts();
       }
     } catch (error) {
-      console.error('Failed to send message');
+      console.error('Failed to send message', error);
+    } finally {
+      setSending(false);
     }
   };
 
+  const handleSelectContact = (contact: ChatContact) => {
+    setActiveContact(contact);
+    setSearchTerm('');
+  };
+
   return (
-    <div className="fixed bottom-20 right-6 w-80 sm:w-96 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col z-50 animate-in slide-in-from-bottom-5">
-      {/* Header */}
+    <div className="fixed bottom-20 right-4 sm:right-6 w-[calc(100vw-2rem)] max-w-96 bg-white rounded-lg shadow-2xl border border-gray-200 overflow-hidden flex flex-col z-50">
       <div className="bg-brand-600 text-white px-4 py-3 flex justify-between items-center">
-        <h3 className="font-medium flex items-center">
-          {activeContact ? (
-            <>
-              <button 
-                onClick={() => setActiveContact(null)} 
-                className="mr-2 hover:bg-brand-700 p-1 rounded transition-colors"
-              >
-                &larr;
-              </button>
-              {activeContact.name}
-            </>
-          ) : (
-            'Messages'
+        <div className="min-w-0 flex items-center gap-2">
+          {activeContact && (
+            <button
+              type="button"
+              onClick={() => setActiveContact(null)}
+              className="p-1 rounded hover:bg-brand-700 transition-colors"
+              title="Back to contacts"
+            >
+              <ArrowLeft size={18} />
+            </button>
           )}
-        </h3>
-        <div className="flex items-center gap-2">
-          <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-400' : 'bg-red-400'}`} title={isConnected ? 'Connected' : 'Disconnected'} />
-          <button onClick={onClose} className="hover:bg-brand-700 p-1 rounded transition-colors">
-            <X size={18} />
-          </button>
+          <div className="min-w-0">
+            <h3 className="font-medium truncate">{activeContact ? activeContact.name : 'Messages'}</h3>
+            <p className="text-xs text-white/75">{isConnected ? 'Connected' : 'Offline'}</p>
+          </div>
         </div>
+        <button type="button" onClick={onClose} className="p-1 rounded hover:bg-brand-700 transition-colors" title="Close chat">
+          <X size={18} />
+        </button>
       </div>
 
-      {/* Body */}
-      <div className="flex-1 h-96 bg-gray-50 overflow-y-auto">
-        {!activeContact ? (
-          // Contacts List
-          <div className="divide-y divide-gray-100">
-            {contacts.length === 0 ? (
-              <div className="p-4 text-center text-gray-500 text-sm mt-10">
-                No recent conversations.
+      {!activeContact ? (
+        <>
+          <div className="p-3 border-b border-gray-200 bg-white">
+            <div className="relative">
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search people"
+                className="w-full rounded-md border border-gray-300 py-2 pl-9 pr-3 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              />
+            </div>
+          </div>
+
+          <div className="h-96 bg-gray-50 overflow-y-auto">
+            {contactsLoading ? (
+              <div className="p-4 text-center text-sm text-gray-500">Loading contacts...</div>
+            ) : filteredContacts.length === 0 ? (
+              <div className="p-6 text-center text-sm text-gray-500">
+                {searchTerm ? 'No matching people found.' : 'No active users are available for chat.'}
               </div>
             ) : (
-              contacts.map(contact => (
-                <div 
-                  key={contact.publicId}
-                  onClick={() => setActiveContact(contact)}
-                  className="flex items-center p-3 hover:bg-gray-100 cursor-pointer transition-colors"
-                >
-                  <div className="w-10 h-10 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center font-medium mr-3">
-                    {getInitials(contact.name)}
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">{contact.name}</p>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        ) : (
-          // Chat View
-          <div className="p-4 space-y-3 flex flex-col min-h-full justify-end">
-            {loading ? (
-              <div className="text-center text-gray-400 py-4">Loading...</div>
-            ) : messages.length === 0 ? (
-              <div className="text-center text-gray-400 py-4">No messages yet. Say hi!</div>
-            ) : (
-              messages.map(msg => {
-                const isMe = msg.senderPublicId === user?.publicId;
-                return (
-                  <div key={msg.publicId} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                    <div 
-                      className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm ${
-                        isMe 
-                          ? 'bg-brand-600 text-white rounded-br-sm' 
-                          : 'bg-gray-200 text-gray-800 rounded-bl-sm'
-                      }`}
-                    >
-                      {msg.message}
+              <div className="divide-y divide-gray-100">
+                {filteredContacts.map((contact) => (
+                  <button
+                    type="button"
+                    key={contact.publicId}
+                    onClick={() => handleSelectContact(contact)}
+                    className="w-full flex items-center gap-3 p-3 text-left hover:bg-gray-100 transition-colors"
+                  >
+                    <div className="h-10 w-10 shrink-0 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center text-sm font-semibold">
+                      {getInitials(contact.name)}
                     </div>
-                  </div>
-                );
-              })
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-sm font-medium text-gray-900 truncate">{contact.name}</p>
+                        {!!contact.unreadCount && (
+                          <span className="rounded-full bg-brand-600 px-2 py-0.5 text-xs font-medium text-white">
+                            {contact.unreadCount}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-500 truncate">
+                        {contact.lastMessage || contact.roleName || 'Start a conversation'}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
             )}
-            <div ref={messagesEndRef} />
           </div>
-        )}
-      </div>
+        </>
+      ) : (
+        <>
+          <div className="h-96 bg-gray-50 overflow-y-auto p-4">
+            {messagesLoading ? (
+              <div className="text-center text-sm text-gray-500 py-6">Loading messages...</div>
+            ) : messages.length === 0 ? (
+              <div className="text-center text-sm text-gray-500 py-6">No messages yet. Send the first one.</div>
+            ) : (
+              <div className="space-y-3">
+                {messages.map((msg) => {
+                  const isMe = msg.senderPublicId === user?.publicId;
+                  return (
+                    <div key={msg.publicId} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
+                      <div
+                        className={`max-w-[78%] rounded-2xl px-3 py-2 text-sm leading-relaxed ${
+                          isMe
+                            ? 'bg-brand-600 text-white rounded-br-sm'
+                            : 'bg-white border border-gray-200 text-gray-800 rounded-bl-sm'
+                        }`}
+                      >
+                        <p className="break-words">{msg.message}</p>
+                        <p className={`mt-1 text-[10px] ${isMe ? 'text-white/70' : 'text-gray-400'}`}>
+                          {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+                <div ref={messagesEndRef} />
+              </div>
+            )}
+          </div>
 
-      {/* Footer / Input */}
-      {activeContact && (
-        <form onSubmit={handleSendMessage} className="p-3 bg-white border-t border-gray-200 flex gap-2">
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Type a message..."
-            className="flex-1 input-field py-1.5"
-          />
-          <button 
-            type="submit" 
-            disabled={!newMessage.trim()}
-            className="bg-brand-600 text-white p-2 rounded-md hover:bg-brand-700 disabled:opacity-50 transition-colors"
-          >
-            <Send size={18} />
-          </button>
-        </form>
+          <form onSubmit={handleSendMessage} className="p-3 bg-white border-t border-gray-200 flex gap-2">
+            <input
+              type="text"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="Type a message"
+              className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              maxLength={1000}
+            />
+            <button
+              type="submit"
+              disabled={!newMessage.trim() || sending}
+              className="h-10 w-10 shrink-0 rounded-md bg-brand-600 text-white flex items-center justify-center hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              title="Send message"
+            >
+              <Send size={18} />
+            </button>
+          </form>
+        </>
       )}
     </div>
   );

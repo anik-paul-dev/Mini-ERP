@@ -1,11 +1,8 @@
-import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useApi } from '../../hooks/useApi';
 import { Link } from 'react-router-dom';
 import { Role } from '../../types';
 import { Shield, Plus, Edit, Trash2 } from 'lucide-react';
-import toast from 'react-hot-toast';
-
 const Roles = () => {
   const { get, del } = useApi();
   const queryClient = useQueryClient();
@@ -94,3 +91,4 @@ const Roles = () => {
 };
 
 export default Roles;
+

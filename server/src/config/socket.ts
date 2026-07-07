@@ -4,6 +4,18 @@ import { verifyAccessToken } from '../utils/tokenUtils';
 
 let io: Server;
 
+const parseCookies = (cookieHeader?: string): Record<string, string> => {
+  if (!cookieHeader) return {};
+
+  return cookieHeader.split(';').reduce<Record<string, string>>((cookies, cookie) => {
+    const [rawName, ...rawValue] = cookie.trim().split('=');
+    if (!rawName || rawValue.length === 0) return cookies;
+
+    cookies[rawName] = decodeURIComponent(rawValue.join('='));
+    return cookies;
+  }, {});
+};
+
 const initSocket = (httpServer: HttpServer): Server => {
   io = new Server(httpServer, {
     cors: {
@@ -13,12 +25,14 @@ const initSocket = (httpServer: HttpServer): Server => {
     },
   });
 
-  // Auth middleware for socket connections
   io.use((socket, next) => {
-    const token = socket.handshake.auth.token;
+    const cookies = parseCookies(socket.handshake.headers.cookie);
+    const token = socket.handshake.auth.token || cookies.accessToken;
+
     if (!token) {
       return next(new Error('Authentication required'));
     }
+
     try {
       const decoded = verifyAccessToken(token);
       (socket as any).user = decoded;
@@ -32,23 +46,12 @@ const initSocket = (httpServer: HttpServer): Server => {
     const user = (socket as any).user;
     console.log(`User connected: ${user.publicId}`);
 
-    // Join user to their own room for targeted notifications
     socket.join(`user:${user.publicId}`);
-    // Join role-based room
     socket.join(`role:${user.role}`);
 
-    // Chat functionality
-    socket.on('chat:send', (data: { receiverId: string; message: string }) => {
-      io.to(`user:${data.receiverId}`).emit('chat:receive', {
-        senderId: user.publicId,
-        message: data.message,
-        timestamp: new Date(),
-      });
-    });
-
-    socket.on('chat:typing', (data: { receiverId: string }) => {
-      io.to(`user:${data.receiverId}`).emit('chat:typing', {
-        senderId: user.publicId,
+    socket.on('chat:typing', (data: { receiverPublicId: string }) => {
+      io.to(`user:${data.receiverPublicId}`).emit('chat:typing', {
+        senderPublicId: user.publicId,
       });
     });
 

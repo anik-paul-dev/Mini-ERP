@@ -18,7 +18,6 @@ class ChatService {
       ],
     }).sort({ createdAt: 1 });
 
-    // Mark as read
     await Chat.updateMany(
       { sender: contact._id, receiver: userId, read: false },
       { $set: { read: true } }
@@ -28,28 +27,65 @@ class ChatService {
   }
 
   async getContacts(userId: string) {
-    // Get users that current user has chatted with
-    const activeChats = await Chat.find({
+    const users = await User.find({ _id: { $ne: userId }, isActive: true })
+      .select('publicId name avatar roleName')
+      .lean();
+
+    const chats = await Chat.find({
       $or: [{ sender: userId }, { receiver: userId }],
     })
       .sort({ createdAt: -1 })
       .lean();
 
-    const contactIds = new Set<string>();
-    activeChats.forEach((chat) => {
-      if (chat.sender.toString() !== userId) contactIds.add(chat.sender.toString());
-      if (chat.receiver.toString() !== userId) contactIds.add(chat.receiver.toString());
+    const latestByContact = new Map<string, any>();
+    const unreadByContact = new Map<string, number>();
+
+    chats.forEach((chat) => {
+      const contactId = chat.sender.toString() === userId ? chat.receiver.toString() : chat.sender.toString();
+
+      if (!latestByContact.has(contactId)) {
+        latestByContact.set(contactId, chat);
+      }
+
+      if (chat.receiver.toString() === userId && !chat.read) {
+        unreadByContact.set(contactId, (unreadByContact.get(contactId) || 0) + 1);
+      }
     });
 
-    const contacts = await User.find({ _id: { $in: Array.from(contactIds) } })
-      .select('publicId name avatar')
-      .lean();
+    return users
+      .map((user) => {
+        const id = user._id.toString();
+        const latest = latestByContact.get(id);
 
-    return contacts;
+        return {
+          publicId: user.publicId,
+          name: user.name,
+          avatar: user.avatar,
+          roleName: user.roleName,
+          lastMessage: latest?.message || '',
+          lastMessageAt: latest?.createdAt || null,
+          unreadCount: unreadByContact.get(id) || 0,
+        };
+      })
+      .sort((a, b) => {
+        if (!a.lastMessageAt && !b.lastMessageAt) return a.name.localeCompare(b.name);
+        if (!a.lastMessageAt) return 1;
+        if (!b.lastMessageAt) return -1;
+        return new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime();
+      });
   }
 
   async sendMessage(senderId: string, senderName: string, senderPublicId: string, receiverPublicId: string, message: string) {
-    const receiver = await User.findOne({ publicId: receiverPublicId });
+    const trimmedMessage = message.trim();
+    if (!trimmedMessage) {
+      throw ApiError.badRequest('Message is required');
+    }
+
+    if (senderPublicId === receiverPublicId) {
+      throw ApiError.badRequest('Cannot send a message to yourself');
+    }
+
+    const receiver = await User.findOne({ publicId: receiverPublicId, isActive: true });
     if (!receiver) {
       throw ApiError.notFound('Receiver not found');
     }
@@ -60,16 +96,16 @@ class ChatService {
       senderName,
       receiver: receiver._id,
       receiverPublicId: receiver.publicId,
-      message,
+      message: trimmedMessage,
     });
 
     await chat.save();
 
-    // Emit via socket
+    const payload = chat.toJSON();
     const io = getIO();
-    io.to(`user:${receiverPublicId}`).emit('chat:receive', chat);
+    io.to(`user:${receiverPublicId}`).emit('chat:receive', payload);
 
-    return chat;
+    return payload;
   }
 }
 

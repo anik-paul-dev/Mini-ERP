@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useApi } from '../../hooks/useApi';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { User, Role } from '../../types';
+import { Role } from '../../types';
 import toast from 'react-hot-toast';
 import PasswordStrength from '../../components/ui/PasswordStrength';
 
@@ -169,3 +169,5 @@ const UserForm = () => {
 };
 
 export default UserForm;
+
+

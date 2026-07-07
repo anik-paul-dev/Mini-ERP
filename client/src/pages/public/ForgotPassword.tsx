@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -13,7 +13,7 @@ const forgotPasswordSchema = z.object({
 type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
 
 const ForgotPassword = () => {
-  const { post, loading } = useApi();
+  const { loading } = useApi();
   const [isSuccess, setIsSuccess] = useState(false);
 
   const {
@@ -24,7 +24,7 @@ const ForgotPassword = () => {
     resolver: zodResolver(forgotPasswordSchema),
   });
 
-  const onSubmit = async (data: ForgotPasswordFormValues) => {
+  const onSubmit = async (_data: ForgotPasswordFormValues) => {
     try {
       // In a real app, this endpoint would exist. Mocking success for now.
       // await post('/auth/forgot-password', data);
@@ -92,3 +92,5 @@ const ForgotPassword = () => {
 };
 
 export default ForgotPassword;
+
+

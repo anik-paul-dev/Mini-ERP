@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { Loader2 } from 'lucide-react';
 
 interface Column<T> {
@@ -68,3 +68,4 @@ function DataTable<T>({ columns, data, isLoading, emptyMessage = 'No data availa
 }
 
 export default DataTable;
+

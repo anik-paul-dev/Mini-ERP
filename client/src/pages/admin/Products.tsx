@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useApi } from '../../hooks/useApi';
 import { Link } from 'react-router-dom';
@@ -147,3 +147,4 @@ const Products = () => {
 };
 
 export default Products;
+

@@ -1,19 +1,39 @@
-import React, { createContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useEffect, useMemo, useState, ReactNode } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
+import { NotificationItem } from '../types';
 
 interface SocketContextType {
   socket: Socket | null;
   isConnected: boolean;
+  notifications: NotificationItem[];
+  unreadNotifications: number;
+  markAllNotificationsRead: () => void;
+  clearNotifications: () => void;
 }
 
 export const SocketContext = createContext<SocketContextType | undefined>(undefined);
 
+const NOTIFICATIONS_STORAGE_KEY = 'erp_notifications';
+
+const loadNotifications = (): NotificationItem[] => {
+  try {
+    return JSON.parse(localStorage.getItem(NOTIFICATIONS_STORAGE_KEY) || '[]');
+  } catch {
+    return [];
+  }
+};
+
 export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
+  const [notifications, setNotifications] = useState<NotificationItem[]>(loadNotifications);
   const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    localStorage.setItem(NOTIFICATIONS_STORAGE_KEY, JSON.stringify(notifications.slice(0, 50)));
+  }, [notifications]);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -25,27 +45,9 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       return;
     }
 
-    // Connect socket
-    // We need to pass the access token, but since we are using HTTP-only cookies, 
-    // the cookie will be sent automatically with credentials: true.
-    // However, the backend currently checks socket.handshake.auth.token.
-    // To support cookies in socket.io, we need to adapt either backend or frontend.
-    // Since backend expects auth.token, we can parse it from a non-http-only cookie if we had one,
-    // or we just rely on the backend being able to read the cookie if configured properly.
-    // Alternatively, we can let the backend auth middleware for socket use cookie parsing.
-    // Assuming backend will read cookies via cookie-parser if we send credentials.
-    
-    // For simplicity, we'll connect and let backend handle auth via cookies (needs a small tweak in backend or we fetch token).
-    // Note: If using HTTP-only cookies, client JS cannot read it. 
-    // We will assume the backend's socket init has been updated to use cookies or we'll mock token passing for now.
-    // Wait, the backend expects `socket.handshake.auth.token`. If it's HTTP-only, we can't get it here.
-    // Let's pass a dummy token and rely on the backend checking the cookie which is sent with `withCredentials`.
-
     const newSocket = io(import.meta.env.VITE_API_URL || 'http://localhost:5000', {
       withCredentials: true,
       transports: ['websocket', 'polling'],
-      // Fallback for auth if backend strictly checks auth.token
-      // auth: { token: 'will-be-checked-via-cookie-on-server' }
     });
 
     setSocket(newSocket);
@@ -58,12 +60,26 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       setIsConnected(false);
     });
 
-    // Global notifications
-    newSocket.on('notification', (data: any) => {
-      if (data.type === 'low_stock') {
-        toast.error(`Low Stock Alert: ${data.message}`, { duration: 5000 });
+    newSocket.on('connect_error', () => {
+      setIsConnected(false);
+    });
+
+    newSocket.on('notification', (data: { type?: string; message?: string; title?: string }) => {
+      const notification: NotificationItem = {
+        id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        type: data.type || 'general',
+        title: data.title || (data.type === 'low_stock' ? 'Low Stock Alert' : 'Notification'),
+        message: data.message || 'You have a new notification',
+        read: false,
+        createdAt: new Date().toISOString(),
+      };
+
+      setNotifications((prev) => [notification, ...prev].slice(0, 50));
+
+      if (notification.type === 'low_stock') {
+        toast.error(`${notification.title}: ${notification.message}`, { duration: 5000 });
       } else {
-        toast(data.message);
+        toast(notification.message);
       }
     });
 
@@ -72,8 +88,30 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     };
   }, [isAuthenticated]);
 
+  const unreadNotifications = useMemo(
+    () => notifications.filter((notification) => !notification.read).length,
+    [notifications]
+  );
+
+  const markAllNotificationsRead = () => {
+    setNotifications((prev) => prev.map((notification) => ({ ...notification, read: true })));
+  };
+
+  const clearNotifications = () => {
+    setNotifications([]);
+  };
+
   return (
-    <SocketContext.Provider value={{ socket, isConnected }}>
+    <SocketContext.Provider
+      value={{
+        socket,
+        isConnected,
+        notifications,
+        unreadNotifications,
+        markAllNotificationsRead,
+        clearNotifications,
+      }}
+    >
       {children}
     </SocketContext.Provider>
   );
