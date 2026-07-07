@@ -32,7 +32,7 @@ const seed = async () => {
       },
       {
         name: 'Employee',
-        permissions: ['products:read', 'sales:create', 'dashboard:read'],
+        permissions: ['products:read', 'customers:read', 'sales:create', 'sales:read', 'dashboard:read'],
         description: 'Can view products and create sales',
         isSystem: true,
       }

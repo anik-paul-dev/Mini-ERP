@@ -42,7 +42,9 @@ class RoleService {
     }
 
     if (role.isSystem) {
-      throw ApiError.forbidden('Cannot update system role');
+      // Prevent changing core identity of system roles
+      delete data.name;
+      delete data.isSystem;
     }
 
     if (data.name && data.name !== role.name) {

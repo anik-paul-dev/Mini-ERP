@@ -25,6 +25,7 @@ import AdminSaleForm from './pages/admin/SaleForm';
 import AdminUsers from './pages/admin/Users';
 import AdminUserForm from './pages/admin/UserForm';
 import AdminRoles from './pages/admin/Roles';
+import AdminRoleForm from './pages/admin/RoleForm';
 
 // Manager Pages
 import ManagerDashboard from './pages/manager/Dashboard';
@@ -78,6 +79,8 @@ function App() {
               <Route path="/admin/users/new" element={<AdminUserForm />} />
               <Route path="/admin/users/:id/edit" element={<AdminUserForm />} />
               <Route path="/admin/roles" element={<AdminRoles />} />
+              <Route path="/admin/roles/new" element={<AdminRoleForm />} />
+              <Route path="/admin/roles/:id/edit" element={<AdminRoleForm />} />
             </Route>
           </Route>
 
