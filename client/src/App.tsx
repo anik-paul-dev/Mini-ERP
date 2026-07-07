@@ -42,7 +42,7 @@ import EmployeeSales from './pages/employee/Sales';
 import EmployeeSaleForm from './pages/employee/SaleForm';
 
 // Role-based redirect component
-import RoleRedirect from './components/guards/RoleRedirect';
+import RoleRedirect from './components/guards/RoleRedirect.tsx';
 
 function App() {
   return (

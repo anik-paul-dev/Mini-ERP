@@ -42,8 +42,8 @@ const UserForm = () => {
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        const rolesData = await get<Role[]>('/roles');
-        if (rolesData) setRoles(rolesData);
+        const rolesData = await get<{data: Role[]}>('/roles');
+        if (rolesData) setRoles(rolesData.data);
       } catch (error) {
         toast.error('Failed to load roles');
       }

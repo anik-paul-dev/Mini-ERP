@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'; // Added to trigger TS reload
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 
