@@ -9,7 +9,7 @@ const Roles = () => {
 
   const { data: roles, isLoading } = useQuery({
     queryKey: ['roles'],
-    queryFn: () => get<{data: Role[]}>('/roles').then(res => res?.data),
+    queryFn: () => get<Role[]>('/roles').then(res => res || []),
   });
 
   return (

@@ -32,6 +32,10 @@ export function useApi() {
           toast.success(successMessage || response.data.message || 'Success');
         }
 
+        if (response.data.meta) {
+          return { data: response.data.data, meta: response.data.meta } as any;
+        }
+
         return response.data.data;
       } catch (err) {
         const error = err as AxiosError<{ message: string; errors?: any[] }>;

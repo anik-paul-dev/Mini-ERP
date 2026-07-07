@@ -19,12 +19,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     const checkAuth = async () => {
+      if (localStorage.getItem('isAuthenticated') !== 'true') {
+        setUser(null);
+        setIsLoading(false);
+        return;
+      }
       try {
         const response = await apiClient.get('/auth/me');
         setUser(response.data.data);
       } catch {
         // Expected 401 when not logged in — just clear user silently
         setUser(null);
+        localStorage.removeItem('isAuthenticated');
       } finally {
         setIsLoading(false);
       }
@@ -35,6 +41,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const login = (userData: User) => {
     setUser(userData);
+    localStorage.setItem('isAuthenticated', 'true');
   };
 
   const logout = async () => {
@@ -44,6 +51,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       console.error('Logout error', error);
     } finally {
       setUser(null);
+      localStorage.removeItem('isAuthenticated');
       window.location.href = '/login';
     }
   };
