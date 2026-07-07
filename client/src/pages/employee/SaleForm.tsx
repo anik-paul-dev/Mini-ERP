@@ -3,6 +3,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useApi } from '../../hooks/useApi';
+import { useAuth } from '../../hooks/useAuth';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { Customer, Product, PaginatedResponse } from '../../types';
@@ -45,23 +46,29 @@ const SaleForm = () => {
 
   const watchItems = watch('items');
 
+  const { hasPermission } = useAuth();
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Even employees can view customers for the dropdown to create sales
-        const [customersData, productsData] = await Promise.all([
-          get<PaginatedResponse<Customer>>('/customers?limit=100'),
-          get<PaginatedResponse<Product>>('/products?limit=100')
-        ]);
+        const customersPromise = hasPermission('customers:read') 
+          ? get<PaginatedResponse<Customer>>('/customers?limit=100') 
+          : Promise.resolve(null);
+          
+        const productsPromise = hasPermission('products:read') 
+          ? get<PaginatedResponse<Product>>('/products?limit=100') 
+          : Promise.resolve(null);
+
+        const [customersData, productsData] = await Promise.all([customersPromise, productsPromise]);
         
         if (customersData) setCustomers(customersData.data);
         if (productsData) setProducts(productsData.data.filter(p => p.stockQuantity > 0)); // Only items in stock
       } catch (error) {
-        toast.error('Failed to load customers or products');
+        // useApi handles the specific error toast, but we can have a fallback if needed
       }
     };
     fetchData();
-  }, [get]);
+  }, [get, hasPermission]);
 
   // Calculate grand total dynamically
   const grandTotal = watchItems.reduce((total, item) => {

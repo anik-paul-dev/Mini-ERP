@@ -43,7 +43,8 @@ export function useApi() {
         
         setError(errorMessage);
         
-        if (showErrorToast) {
+        const isForbiddenGet = error.response?.status === 403 && method === 'GET';
+        if (showErrorToast && !isForbiddenGet) {
           toast.error(errorMessage);
         }
 
