@@ -41,6 +41,9 @@ import EmployeeProducts from './pages/employee/Products';
 import EmployeeSales from './pages/employee/Sales';
 import EmployeeSaleForm from './pages/employee/SaleForm';
 
+// Role-based redirect component
+import RoleRedirect from './components/guards/RoleRedirect';
+
 function App() {
   return (
     <BrowserRouter>
@@ -56,57 +59,53 @@ function App() {
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
           
-          {/* Root redirect based on role is handled in DashboardLayout or AuthContext, but let's default to dashboard */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          {/* Root redirect based on role */}
+          <Route path="/" element={<RoleRedirect />} />
 
-          {/* Common Dashboard Route - will redirect based on role in the component */}
-          <Route path="/dashboard" element={<DashboardLayout />}>
-            
-            {/* Admin Routes */}
-            <Route element={<RoleGuard allowedRoles={['Admin']} />}>
-              <Route path="admin">
-                <Route index element={<AdminDashboard />} />
-                <Route path="products" element={<AdminProducts />} />
-                <Route path="products/new" element={<AdminProductForm />} />
-                <Route path="products/:id/edit" element={<AdminProductForm />} />
-                <Route path="customers" element={<AdminCustomers />} />
-                <Route path="customers/new" element={<AdminCustomerForm />} />
-                <Route path="customers/:id/edit" element={<AdminCustomerForm />} />
-                <Route path="sales" element={<AdminSales />} />
-                <Route path="sales/new" element={<AdminSaleForm />} />
-                <Route path="users" element={<AdminUsers />} />
-                <Route path="users/new" element={<AdminUserForm />} />
-                <Route path="users/:id/edit" element={<AdminUserForm />} />
-                <Route path="roles" element={<AdminRoles />} />
-              </Route>
+          {/* Admin Routes */}
+          <Route element={<RoleGuard allowedRoles={['Admin']} />}>
+            <Route element={<DashboardLayout />}>
+              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/products" element={<AdminProducts />} />
+              <Route path="/admin/products/new" element={<AdminProductForm />} />
+              <Route path="/admin/products/:id/edit" element={<AdminProductForm />} />
+              <Route path="/admin/customers" element={<AdminCustomers />} />
+              <Route path="/admin/customers/new" element={<AdminCustomerForm />} />
+              <Route path="/admin/customers/:id/edit" element={<AdminCustomerForm />} />
+              <Route path="/admin/sales" element={<AdminSales />} />
+              <Route path="/admin/sales/new" element={<AdminSaleForm />} />
+              <Route path="/admin/users" element={<AdminUsers />} />
+              <Route path="/admin/users/new" element={<AdminUserForm />} />
+              <Route path="/admin/users/:id/edit" element={<AdminUserForm />} />
+              <Route path="/admin/roles" element={<AdminRoles />} />
             </Route>
-
-            {/* Manager Routes */}
-            <Route element={<RoleGuard allowedRoles={['Manager']} />}>
-              <Route path="manager">
-                <Route index element={<ManagerDashboard />} />
-                <Route path="products" element={<ManagerProducts />} />
-                <Route path="products/new" element={<ManagerProductForm />} />
-                <Route path="products/:id/edit" element={<ManagerProductForm />} />
-                <Route path="customers" element={<ManagerCustomers />} />
-                <Route path="customers/new" element={<ManagerCustomerForm />} />
-                <Route path="customers/:id/edit" element={<ManagerCustomerForm />} />
-                <Route path="sales" element={<ManagerSales />} />
-                <Route path="sales/new" element={<ManagerSaleForm />} />
-              </Route>
-            </Route>
-
-            {/* Employee Routes */}
-            <Route element={<RoleGuard allowedRoles={['Employee']} />}>
-              <Route path="employee">
-                <Route index element={<EmployeeDashboard />} />
-                <Route path="products" element={<EmployeeProducts />} />
-                <Route path="sales" element={<EmployeeSales />} />
-                <Route path="sales/new" element={<EmployeeSaleForm />} />
-              </Route>
-            </Route>
-
           </Route>
+
+          {/* Manager Routes */}
+          <Route element={<RoleGuard allowedRoles={['Manager']} />}>
+            <Route element={<DashboardLayout />}>
+              <Route path="/manager" element={<ManagerDashboard />} />
+              <Route path="/manager/products" element={<ManagerProducts />} />
+              <Route path="/manager/products/new" element={<ManagerProductForm />} />
+              <Route path="/manager/products/:id/edit" element={<ManagerProductForm />} />
+              <Route path="/manager/customers" element={<ManagerCustomers />} />
+              <Route path="/manager/customers/new" element={<ManagerCustomerForm />} />
+              <Route path="/manager/customers/:id/edit" element={<ManagerCustomerForm />} />
+              <Route path="/manager/sales" element={<ManagerSales />} />
+              <Route path="/manager/sales/new" element={<ManagerSaleForm />} />
+            </Route>
+          </Route>
+
+          {/* Employee Routes */}
+          <Route element={<RoleGuard allowedRoles={['Employee']} />}>
+            <Route element={<DashboardLayout />}>
+              <Route path="/employee" element={<EmployeeDashboard />} />
+              <Route path="/employee/products" element={<EmployeeProducts />} />
+              <Route path="/employee/sales" element={<EmployeeSales />} />
+              <Route path="/employee/sales/new" element={<EmployeeSaleForm />} />
+            </Route>
+          </Route>
+
         </Route>
 
         {/* Fallback */}

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import authService from './auth.service';
+import User from './auth.model';
 import catchAsync from '../../utils/catchAsync';
 import ApiResponse from '../../utils/ApiResponse';
 
@@ -69,8 +70,24 @@ class AuthController {
   });
 
   getCurrentUser = catchAsync(async (req: Request, res: Response) => {
-    // User is attached to req by auth middleware
-    res.status(200).json(ApiResponse.success(req.user, 'Current user'));
+    // Fetch full user data from DB instead of returning just the JWT payload
+    const user = await User.findOne({ publicId: req.user?.publicId })
+      .select('-password -refreshToken -passwordResetToken -passwordResetExpires')
+      .populate('role', 'permissions name')
+      .lean();
+
+    if (!user) {
+      return res.status(401).json(new ApiResponse(401, 'User not found'));
+    }
+
+    const role = user.role as any;
+    const userData = {
+      ...user,
+      roleName: user.roleName,
+      permissions: role?.permissions || [],
+    };
+
+    res.status(200).json(ApiResponse.success(userData, 'Current user'));
   });
 }
 

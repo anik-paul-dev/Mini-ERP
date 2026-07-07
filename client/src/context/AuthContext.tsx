@@ -22,7 +22,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       try {
         const response = await apiClient.get('/auth/me');
         setUser(response.data.data);
-      } catch (error) {
+      } catch {
+        // Expected 401 when not logged in — just clear user silently
         setUser(null);
       } finally {
         setIsLoading(false);
