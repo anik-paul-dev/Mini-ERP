@@ -90,10 +90,10 @@ const saleSchema = new Schema<ISale>(
     timestamps: true,
     toJSON: {
       transform(_doc, ret) {
-        delete ret._id;
-        delete ret.__v;
-        delete ret.customer;
-        delete ret.createdBy;
+        delete (ret as any)._id;
+        delete (ret as any).__v;
+        delete (ret as any).customer;
+        delete (ret as any).createdBy;
         ret.items?.forEach((item: any) => {
           delete item.product;
         });

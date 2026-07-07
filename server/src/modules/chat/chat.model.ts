@@ -49,10 +49,10 @@ const chatSchema = new Schema<IChat>(
     timestamps: true,
     toJSON: {
       transform(_doc, ret) {
-        delete ret._id;
-        delete ret.__v;
-        delete ret.sender;
-        delete ret.receiver;
+        delete (ret as any)._id;
+        delete (ret as any).__v;
+        delete (ret as any).sender;
+        delete (ret as any).receiver;
         return ret;
       },
     },

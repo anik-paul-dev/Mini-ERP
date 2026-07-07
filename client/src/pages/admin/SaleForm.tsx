@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import { useState, useEffect } from 'react';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useApi } from '../../hooks/useApi';
@@ -7,7 +7,6 @@ import { useAuth } from '../../hooks/useAuth';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { Customer, Product, PaginatedResponse } from '../../types';
-import toast from 'react-hot-toast';
 
 const saleSchema = z.object({
   customerPublicId: z.string().min(1, 'Please select a customer'),

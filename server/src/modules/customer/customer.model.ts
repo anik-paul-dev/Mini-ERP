@@ -52,9 +52,9 @@ const customerSchema = new Schema<ICustomer>(
     timestamps: true,
     toJSON: {
       transform(_doc, ret) {
-        delete ret._id;
-        delete ret.__v;
-        delete ret.createdBy;
+        delete (ret as any)._id;
+        delete (ret as any).__v;
+        delete (ret as any).createdBy;
         return ret;
       },
     },
