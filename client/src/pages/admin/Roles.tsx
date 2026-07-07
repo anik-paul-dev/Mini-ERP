@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useApi } from '../../../hooks/useApi';
-import { Role } from '../../../types';
+import { useApi } from '../../hooks/useApi';
+import { Role } from '../../types';
 import { Shield } from 'lucide-react';
 
 const Roles = () => {

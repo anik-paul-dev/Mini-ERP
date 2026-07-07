@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useApi } from '../../../hooks/useApi';
+import { useApi } from '../../hooks/useApi';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { User, Role } from '../../../types';
+import { User, Role } from '../../types';
 import toast from 'react-hot-toast';
-import PasswordStrength from '../../../components/ui/PasswordStrength';
+import PasswordStrength from '../../components/ui/PasswordStrength';
 
 const userSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),

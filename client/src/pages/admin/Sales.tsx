@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useApi } from '../../../hooks/useApi';
+import { useApi } from '../../hooks/useApi';
 import { Link } from 'react-router-dom';
-import DataTable from '../../../components/ui/DataTable';
-import SearchBar from '../../../components/ui/SearchBar';
-import Pagination from '../../../components/ui/Pagination';
-import { Sale, PaginatedResponse } from '../../../types';
-import { formatCurrency, formatDate } from '../../../utils/helpers';
+import DataTable from '../../components/ui/DataTable';
+import SearchBar from '../../components/ui/SearchBar';
+import Pagination from '../../components/ui/Pagination';
+import { Sale, PaginatedResponse } from '../../types';
+import { formatCurrency, formatDate } from '../../utils/helpers';
 import { Plus } from 'lucide-react';
 
 const Sales = () => {

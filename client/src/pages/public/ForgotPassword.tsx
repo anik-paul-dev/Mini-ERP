@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useApi } from '../../../hooks/useApi';
+import { useApi } from '../../hooks/useApi';
 import { Link } from 'react-router-dom';
 import { CheckCircle } from 'lucide-react';
 

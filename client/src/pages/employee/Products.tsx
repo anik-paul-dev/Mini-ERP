@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useApi } from '../../../hooks/useApi';
-import DataTable from '../../../components/ui/DataTable';
-import SearchBar from '../../../components/ui/SearchBar';
-import Pagination from '../../../components/ui/Pagination';
-import { Product, PaginatedResponse } from '../../../types';
-import { formatCurrency, formatDate } from '../../../utils/helpers';
+import { useApi } from '../../hooks/useApi';
+import DataTable from '../../components/ui/DataTable';
+import SearchBar from '../../components/ui/SearchBar';
+import Pagination from '../../components/ui/Pagination';
+import { Product, PaginatedResponse } from '../../types';
+import { formatCurrency, formatDate } from '../../utils/helpers';
 
 const Products = () => {
   const { get } = useApi();

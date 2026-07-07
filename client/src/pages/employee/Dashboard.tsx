@@ -1,11 +1,11 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useApi } from '../../../hooks/useApi';
-import StatCard from '../../../components/ui/StatCard';
+import { useApi } from '../../hooks/useApi';
+import StatCard from '../../components/ui/StatCard';
 import { Package, Users, ShoppingCart, DollarSign, AlertCircle } from 'lucide-react';
-import { formatCurrency, formatDate } from '../../../utils/helpers';
-import { DashboardStats } from '../../../types';
-import { Skeleton } from '../../../components/ui/Skeleton';
+import { formatCurrency, formatDate } from '../../utils/helpers';
+import { DashboardStats } from '../../types';
+import { Skeleton } from '../../components/ui/Skeleton';
 
 const Dashboard = () => {
   const { get } = useApi();

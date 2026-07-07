@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useApi } from '../../../hooks/useApi';
+import { useApi } from '../../hooks/useApi';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { Customer } from '../../../types';
+import { Customer } from '../../types';
 import toast from 'react-hot-toast';
 
 const customerSchema = z.object({

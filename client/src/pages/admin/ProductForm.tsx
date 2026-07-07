@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useApi } from '../../../hooks/useApi';
+import { useApi } from '../../hooks/useApi';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import ImageUpload from '../../../components/ui/ImageUpload';
+import ImageUpload from '../../components/ui/ImageUpload';
 import { ArrowLeft } from 'lucide-react';
-import { Product } from '../../../types';
+import { Product } from '../../types';
 import toast from 'react-hot-toast';
 
 const productSchema = z.object({

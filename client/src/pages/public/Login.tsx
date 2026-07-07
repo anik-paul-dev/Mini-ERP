@@ -2,8 +2,8 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useAuth } from '../../../hooks/useAuth';
-import { useApi } from '../../../hooks/useApi';
+import { useAuth } from '../../hooks/useAuth';
+import { useApi } from '../../hooks/useApi';
 import { Link } from 'react-router-dom';
 
 const loginSchema = z.object({

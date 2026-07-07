@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useApi } from '../../../hooks/useApi';
+import { useApi } from '../../hooks/useApi';
 import { Link } from 'react-router-dom';
-import DataTable from '../../../components/ui/DataTable';
-import SearchBar from '../../../components/ui/SearchBar';
-import Pagination from '../../../components/ui/Pagination';
-import ConfirmDialog from '../../../components/ui/ConfirmDialog';
-import { Customer, PaginatedResponse } from '../../../types';
+import DataTable from '../../components/ui/DataTable';
+import SearchBar from '../../components/ui/SearchBar';
+import Pagination from '../../components/ui/Pagination';
+import ConfirmDialog from '../../components/ui/ConfirmDialog';
+import { Customer, PaginatedResponse } from '../../types';
 import { Plus, Edit2, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
