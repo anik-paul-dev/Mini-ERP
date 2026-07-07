@@ -4,6 +4,8 @@ import catchAsync from '../../utils/catchAsync';
 import ApiResponse from '../../utils/ApiResponse';
 import dashboardService from '../dashboard/dashboard.service';
 
+type PublicIdParams = { publicId: string };
+
 class SaleController {
   getAllSales = catchAsync(async (req: Request, res: Response) => {
     const { sales, total } = await saleService.getAllSales(req.query);
@@ -19,7 +21,7 @@ class SaleController {
     );
   });
 
-  getSale = catchAsync(async (req: Request, res: Response) => {
+  getSale = catchAsync(async (req: Request<PublicIdParams>, res: Response) => {
     const sale = await saleService.getSale(req.params.publicId);
     res.status(200).json(ApiResponse.success(sale));
   });

@@ -3,8 +3,10 @@ import chatService from './chat.service';
 import catchAsync from '../../utils/catchAsync';
 import ApiResponse from '../../utils/ApiResponse';
 
+type ContactParams = { contactPublicId: string };
+
 class ChatController {
-  getHistory = catchAsync(async (req: Request, res: Response) => {
+  getHistory = catchAsync(async (req: Request<ContactParams>, res: Response) => {
     const history = await chatService.getChatHistory(req.user!._id!, req.params.contactPublicId);
     res.status(200).json(ApiResponse.success(history, 'Chat history fetched'));
   });

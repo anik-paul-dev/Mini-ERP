@@ -4,6 +4,8 @@ import catchAsync from '../../utils/catchAsync';
 import ApiResponse from '../../utils/ApiResponse';
 import dashboardService from '../dashboard/dashboard.service';
 
+type PublicIdParams = { publicId: string };
+
 class ProductController {
   getAllProducts = catchAsync(async (req: Request, res: Response) => {
     const { products, total } = await productService.getAllProducts(req.query);
@@ -19,7 +21,7 @@ class ProductController {
     );
   });
 
-  getProduct = catchAsync(async (req: Request, res: Response) => {
+  getProduct = catchAsync(async (req: Request<PublicIdParams>, res: Response) => {
     const product = await productService.getProduct(req.params.publicId);
     res.status(200).json(ApiResponse.success(product));
   });
@@ -30,17 +32,17 @@ class ProductController {
     res.status(201).json(ApiResponse.created(product, 'Product created successfully'));
   });
 
-  updateProduct = catchAsync(async (req: Request, res: Response) => {
+  updateProduct = catchAsync(async (req: Request<PublicIdParams>, res: Response) => {
     const product = await productService.updateProduct(
-      req.params.publicId, 
-      req.body, 
+      req.params.publicId,
+      req.body,
       req.file as Express.Multer.File
     );
     await dashboardService.invalidateCache();
     res.status(200).json(ApiResponse.success(product, 'Product updated successfully'));
   });
 
-  deleteProduct = catchAsync(async (req: Request, res: Response) => {
+  deleteProduct = catchAsync(async (req: Request<PublicIdParams>, res: Response) => {
     await productService.deleteProduct(req.params.publicId);
     await dashboardService.invalidateCache();
     res.status(200).json(ApiResponse.success(null, 'Product deleted successfully'));

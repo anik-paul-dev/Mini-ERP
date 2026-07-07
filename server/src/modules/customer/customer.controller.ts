@@ -4,6 +4,8 @@ import catchAsync from '../../utils/catchAsync';
 import ApiResponse from '../../utils/ApiResponse';
 import dashboardService from '../dashboard/dashboard.service';
 
+type PublicIdParams = { publicId: string };
+
 class CustomerController {
   getAllCustomers = catchAsync(async (req: Request, res: Response) => {
     const { customers, total } = await customerService.getAllCustomers(req.query);
@@ -19,7 +21,7 @@ class CustomerController {
     );
   });
 
-  getCustomer = catchAsync(async (req: Request, res: Response) => {
+  getCustomer = catchAsync(async (req: Request<PublicIdParams>, res: Response) => {
     const customer = await customerService.getCustomer(req.params.publicId);
     res.status(200).json(ApiResponse.success(customer));
   });
@@ -30,12 +32,12 @@ class CustomerController {
     res.status(201).json(ApiResponse.created(customer, 'Customer created successfully'));
   });
 
-  updateCustomer = catchAsync(async (req: Request, res: Response) => {
+  updateCustomer = catchAsync(async (req: Request<PublicIdParams>, res: Response) => {
     const customer = await customerService.updateCustomer(req.params.publicId, req.body);
     res.status(200).json(ApiResponse.success(customer, 'Customer updated successfully'));
   });
 
-  deleteCustomer = catchAsync(async (req: Request, res: Response) => {
+  deleteCustomer = catchAsync(async (req: Request<PublicIdParams>, res: Response) => {
     await customerService.deleteCustomer(req.params.publicId);
     await dashboardService.invalidateCache();
     res.status(200).json(ApiResponse.success(null, 'Customer deleted successfully'));

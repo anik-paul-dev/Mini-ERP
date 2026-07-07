@@ -3,6 +3,8 @@ import userService from './user.service';
 import catchAsync from '../../utils/catchAsync';
 import ApiResponse from '../../utils/ApiResponse';
 
+type PublicIdParams = { publicId: string };
+
 class UserController {
   getAllUsers = catchAsync(async (req: Request, res: Response) => {
     const { users, total } = await userService.getAllUsers(req.query);
@@ -18,7 +20,7 @@ class UserController {
     );
   });
 
-  getUser = catchAsync(async (req: Request, res: Response) => {
+  getUser = catchAsync(async (req: Request<PublicIdParams>, res: Response) => {
     const user = await userService.getUser(req.params.publicId);
     res.status(200).json(ApiResponse.success(user));
   });
@@ -28,12 +30,12 @@ class UserController {
     res.status(201).json(ApiResponse.created(user, 'User created successfully'));
   });
 
-  updateUser = catchAsync(async (req: Request, res: Response) => {
+  updateUser = catchAsync(async (req: Request<PublicIdParams>, res: Response) => {
     const user = await userService.updateUser(req.params.publicId, req.body);
     res.status(200).json(ApiResponse.success(user, 'User updated successfully'));
   });
 
-  deleteUser = catchAsync(async (req: Request, res: Response) => {
+  deleteUser = catchAsync(async (req: Request<PublicIdParams>, res: Response) => {
     await userService.deleteUser(req.params.publicId);
     res.status(200).json(ApiResponse.success(null, 'User deleted successfully'));
   });
