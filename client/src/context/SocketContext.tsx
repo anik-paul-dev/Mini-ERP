@@ -1,5 +1,6 @@
 import React, { createContext, useEffect, useMemo, useState, ReactNode } from 'react';
 import { io, Socket } from 'socket.io-client';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
 import { NotificationItem } from '../types';
@@ -30,6 +31,7 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [isConnected, setIsConnected] = useState(false);
   const [notifications, setNotifications] = useState<NotificationItem[]>(loadNotifications);
   const { isAuthenticated } = useAuth();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     localStorage.setItem(NOTIFICATIONS_STORAGE_KEY, JSON.stringify(notifications.slice(0, 50)));
@@ -83,10 +85,51 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       }
     });
 
+    const invalidateDashboardQueries = () => {
+      queryClient.invalidateQueries({ queryKey: ['adminDashboardStats'] });
+      queryClient.invalidateQueries({ queryKey: ['managerDashboardStats'] });
+      queryClient.invalidateQueries({ queryKey: ['employeeDashboardStats'] });
+    };
+
+    const invalidateProductQueries = () => {
+      queryClient.invalidateQueries({ queryKey: ['adminProducts'] });
+      queryClient.invalidateQueries({ queryKey: ['managerProducts'] });
+      queryClient.invalidateQueries({ queryKey: ['employeeProducts'] });
+      invalidateDashboardQueries();
+    };
+
+    const invalidateCustomerQueries = () => {
+      queryClient.invalidateQueries({ queryKey: ['adminCustomers'] });
+      queryClient.invalidateQueries({ queryKey: ['managerCustomers'] });
+      invalidateDashboardQueries();
+    };
+
+    const invalidateSaleQueries = () => {
+      queryClient.invalidateQueries({ queryKey: ['adminSales'] });
+      queryClient.invalidateQueries({ queryKey: ['managerSales'] });
+      queryClient.invalidateQueries({ queryKey: ['employeeSales'] });
+      invalidateProductQueries();
+      invalidateCustomerQueries();
+    };
+
+    const invalidateUserQueries = () => {
+      queryClient.invalidateQueries({ queryKey: ['adminUsers'] });
+    };
+
+    newSocket.on('sale-created', invalidateSaleQueries);
+    newSocket.on('product-created', invalidateProductQueries);
+    newSocket.on('product-updated', invalidateProductQueries);
+    newSocket.on('product-deleted', invalidateProductQueries);
+    newSocket.on('customer-created', invalidateCustomerQueries);
+    newSocket.on('customer-updated', invalidateCustomerQueries);
+    newSocket.on('customer-deleted', invalidateCustomerQueries);
+    newSocket.on('user-created', invalidateUserQueries);
+    newSocket.on('user-updated', invalidateUserQueries);
+    newSocket.on('user-deleted', invalidateUserQueries);
     return () => {
       newSocket.disconnect();
     };
-  }, [isAuthenticated]);
+  }, [isAuthenticated, queryClient]);
 
   const unreadNotifications = useMemo(
     () => notifications.filter((notification) => !notification.read).length,

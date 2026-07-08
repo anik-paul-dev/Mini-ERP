@@ -3,6 +3,7 @@ import customerService from './customer.service';
 import catchAsync from '../../utils/catchAsync';
 import ApiResponse from '../../utils/ApiResponse';
 import dashboardService from '../dashboard/dashboard.service';
+import { getIO } from '../../config/socket';
 
 type PublicIdParams = { publicId: string };
 
@@ -29,17 +30,21 @@ class CustomerController {
   createCustomer = catchAsync(async (req: Request, res: Response) => {
     const customer = await customerService.createCustomer(req.body, req.user!);
     await dashboardService.invalidateCache();
+    getIO().emit('customer-created', { customerId: customer.publicId });
     res.status(201).json(ApiResponse.created(customer, 'Customer created successfully'));
   });
 
   updateCustomer = catchAsync(async (req: Request<PublicIdParams>, res: Response) => {
     const customer = await customerService.updateCustomer(req.params.publicId, req.body, req.user!);
+    await dashboardService.invalidateCache();
+    getIO().emit('customer-updated', { customerId: customer.publicId });
     res.status(200).json(ApiResponse.success(customer, 'Customer updated successfully'));
   });
 
   deleteCustomer = catchAsync(async (req: Request<PublicIdParams>, res: Response) => {
     await customerService.deleteCustomer(req.params.publicId, req.user!);
     await dashboardService.invalidateCache();
+    getIO().emit('customer-deleted', { customerId: req.params.publicId });
     res.status(200).json(ApiResponse.success(null, 'Customer deleted successfully'));
   });
 }

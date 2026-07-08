@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import userService from './user.service';
 import catchAsync from '../../utils/catchAsync';
 import ApiResponse from '../../utils/ApiResponse';
+import { getIO } from '../../config/socket';
 
 type PublicIdParams = { publicId: string };
 
@@ -27,16 +28,19 @@ class UserController {
 
   createUser = catchAsync(async (req: Request, res: Response) => {
     const user = await userService.createUser(req.body, req.user!);
+    getIO().emit('user-created', { userId: user.publicId });
     res.status(201).json(ApiResponse.created(user, 'User created successfully'));
   });
 
   updateUser = catchAsync(async (req: Request<PublicIdParams>, res: Response) => {
     const user = await userService.updateUser(req.params.publicId, req.body, req.user!);
+    getIO().emit('user-updated', { userId: user?.publicId });
     res.status(200).json(ApiResponse.success(user, 'User updated successfully'));
   });
 
   deleteUser = catchAsync(async (req: Request<PublicIdParams>, res: Response) => {
     await userService.deleteUser(req.params.publicId, req.user!);
+    getIO().emit('user-deleted', { userId: req.params.publicId });
     res.status(200).json(ApiResponse.success(null, 'User deleted successfully'));
   });
 }

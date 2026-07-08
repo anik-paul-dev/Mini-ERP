@@ -3,6 +3,7 @@ import saleService from './sale.service';
 import catchAsync from '../../utils/catchAsync';
 import ApiResponse from '../../utils/ApiResponse';
 import dashboardService from '../dashboard/dashboard.service';
+import { getIO } from '../../config/socket';
 
 type PublicIdParams = { publicId: string };
 
@@ -31,6 +32,7 @@ class SaleController {
     const sale = await saleService.createSale(req.body, user);
     
     await dashboardService.invalidateCache();
+    getIO().emit('sale-created', { saleId: sale.publicId, grandTotal: sale.grandTotal, customerName: sale.customerName });
     
     res.status(201).json(ApiResponse.created(sale, 'Sale created successfully'));
   });

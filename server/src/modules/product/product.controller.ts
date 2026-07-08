@@ -3,6 +3,7 @@ import productService from './product.service';
 import catchAsync from '../../utils/catchAsync';
 import ApiResponse from '../../utils/ApiResponse';
 import dashboardService from '../dashboard/dashboard.service';
+import { getIO } from '../../config/socket';
 
 type PublicIdParams = { publicId: string };
 
@@ -29,6 +30,7 @@ class ProductController {
   createProduct = catchAsync(async (req: Request, res: Response) => {
     const product = await productService.createProduct(req.body, req.file as Express.Multer.File, req.user!);
     await dashboardService.invalidateCache();
+    getIO().emit('product-created', { productId: product.publicId });
     res.status(201).json(ApiResponse.created(product, 'Product created successfully'));
   });
 
@@ -40,12 +42,14 @@ class ProductController {
       req.file as Express.Multer.File
     );
     await dashboardService.invalidateCache();
+    getIO().emit('product-updated', { productId: product?.publicId });
     res.status(200).json(ApiResponse.success(product, 'Product updated successfully'));
   });
 
   deleteProduct = catchAsync(async (req: Request<PublicIdParams>, res: Response) => {
     await productService.deleteProduct(req.params.publicId, req.user!);
     await dashboardService.invalidateCache();
+    getIO().emit('product-deleted', { productId: req.params.publicId });
     res.status(200).json(ApiResponse.success(null, 'Product deleted successfully'));
   });
 }
