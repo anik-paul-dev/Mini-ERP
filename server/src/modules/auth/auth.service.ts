@@ -8,6 +8,7 @@ import {
   generatePasswordResetToken,
   hashToken,
 } from '../../utils/tokenUtils';
+import { sendPasswordResetEmail } from '../../utils/email';
 
 class AuthService {
   async register(data: any) {
@@ -141,9 +142,23 @@ class AuthService {
     user.passwordResetExpires = expires;
     await user.save({ validateBeforeSave: false });
 
-    // In a real app, send email here with the raw resetToken.
-    // For this assessment, we'll return the raw token.
-    return resetToken;
+    try {
+      await sendPasswordResetEmail({
+        to: user.email,
+        name: user.name,
+        resetToken,
+      });
+    } catch (error: any) {
+      user.passwordResetToken = '';
+      user.passwordResetExpires = new Date(0);
+      await user.save({ validateBeforeSave: false });
+
+      if (error?.code === 'EAUTH') {
+        throw ApiError.internal('Gmail SMTP login failed. Check SMTP_USER and Google app password.');
+      }
+
+      throw ApiError.internal('Unable to send password reset email');
+    }
   }
 
   async resetPassword(token: string, newPassword: string) {
@@ -195,3 +210,4 @@ class AuthService {
 }
 
 export default new AuthService();
+

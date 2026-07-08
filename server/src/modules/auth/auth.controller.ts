@@ -92,9 +92,8 @@ class AuthController {
 
   forgotPassword = catchAsync(async (req: Request, res: Response) => {
     const { email } = req.body;
-    const resetToken = await authService.forgotPassword(email);
-    // Return resetToken in development for testing purposes (since we don't have real email service here)
-    res.status(200).json(ApiResponse.success({ resetToken }, 'Password reset link sent to email'));
+    await authService.forgotPassword(email);
+    res.status(200).json(ApiResponse.success(null, 'Password reset link sent to email'));
   });
 
   resetPassword = catchAsync(async (req: Request<{ token: string }>, res: Response) => {
