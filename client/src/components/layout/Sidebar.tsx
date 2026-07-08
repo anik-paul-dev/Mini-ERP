@@ -79,7 +79,7 @@ const Sidebar = () => {
   const allowedItems = menuItems.filter(item => item.roles.includes(user.roleName));
 
   return (
-    <div className="flex flex-col w-64 bg-slate-900 h-full text-white transition-all duration-300 shadow-xl">
+    <div className="flex flex-col w-64 bg-slate-900 h-full text-white transition-all duration-300 shadow-xl print:hidden">
       <div className="flex items-center justify-center h-16 border-b border-slate-800">
         <h1 className="text-xl font-bold bg-gradient-to-r from-brand-400 to-brand-300 bg-clip-text text-transparent">Mini ERP</h1>
       </div>
@@ -127,4 +127,3 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
-

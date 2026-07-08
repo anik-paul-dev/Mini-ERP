@@ -49,14 +49,17 @@ const Sales = () => {
 
   const handleExport = async () => {
     try {
-      const query = `${searchTerm ? `?search=${searchTerm}` : '?'}${statusFilter ? `${searchTerm ? '&' : ''}status=${statusFilter}` : ''}`;
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/sales/export${searchTerm || statusFilter ? query : ''}`, {
+      const params = new URLSearchParams();
+      if (searchTerm) params.set('search', searchTerm);
+      if (statusFilter) params.set('status', statusFilter);
+      const query = params.toString();
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/sales/export${query ? `?${query}` : ''}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         withCredentials: true,
         responseType: 'blob',
       });
 
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'text/csv;charset=utf-8;' }));
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', 'sales_export.csv');
@@ -173,4 +176,3 @@ const Sales = () => {
 };
 
 export default Sales;
-

@@ -72,11 +72,10 @@ class SaleController {
   exportSales = catchAsync(async (req: Request, res: Response) => {
     const csv = await saleService.exportSalesCSV(req.query);
     
-    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader('Content-Disposition', 'attachment; filename=sales_export.csv');
-    res.status(200).send(csv);
+    res.status(200).send(`\uFEFF${csv}`);
   });
 }
 
 export default new SaleController();
-

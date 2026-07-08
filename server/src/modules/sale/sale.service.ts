@@ -10,6 +10,28 @@ import activityService from '../activity/activity.service';
 type SaleUser = { _id?: string; name?: string };
 
 class SaleService {
+  private formatCsvCell(value: unknown) {
+    const normalizedValue = value === null || value === undefined ? '' : String(value);
+    return `"${normalizedValue.replace(/"/g, '""')}"`;
+  }
+
+  private formatCurrency(amount: number) {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(amount);
+  }
+
+  private formatDate(date: Date) {
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(date);
+  }
+
   async getAllSales(query: any) {
     const saleQuery = new QueryBuilder(Sale.find(), query)
       .search(['customerName', 'publicId'])
@@ -281,21 +303,26 @@ class SaleService {
 
     const sales = await saleQuery.query;
 
-    if (!sales || sales.length === 0) {
-      return '';
-    }
-
-    let csv = 'Sale ID,Customer,Status,Total Items,Grand Total,Created By,Date\n';
+    const rows = [
+      ['Sale ID', 'Customer', 'Items', 'Status', 'Grand Total', 'Created By', 'Date'],
+    ];
 
     for (const sale of sales) {
-      const date = sale.createdAt ? new Date(sale.createdAt).toISOString() : '';
+      const date = sale.createdAt ? this.formatDate(new Date(sale.createdAt)) : '';
       const itemsCount = sale.items?.length || 0;
-      csv += `${sale.publicId},"${sale.customerName}",${sale.status || 'active'},${itemsCount},${sale.grandTotal},"${sale.createdByName}",${date}\n`;
+      rows.push([
+        sale.publicId.substring(0, 8),
+        sale.customerName,
+        `${itemsCount} item(s)`,
+        sale.status === 'canceled' ? 'Canceled' : 'Active',
+        this.formatCurrency(sale.grandTotal),
+        sale.createdByName,
+        date,
+      ]);
     }
 
-    return csv;
+    return rows.map((row) => row.map((cell) => this.formatCsvCell(cell)).join(',')).join('\n');
   }
 }
 
 export default new SaleService();
-

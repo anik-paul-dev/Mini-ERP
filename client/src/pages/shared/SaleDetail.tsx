@@ -43,7 +43,7 @@ const SaleDetail = () => {
   }
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto animate-in fade-in print:max-w-none print:m-0">
+    <div className="invoice-print-page space-y-6 max-w-4xl mx-auto animate-in fade-in print:max-w-none print:m-0">
       <div className="flex justify-between items-center print:hidden">
         <Link to={basePath} className="flex items-center text-gray-500 hover:text-gray-700">
           <ArrowLeft size={20} className="mr-1" />
@@ -55,7 +55,7 @@ const SaleDetail = () => {
         </button>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden print:shadow-none print:border-none">
+      <div className="invoice-print-area bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="p-8">
           <div className="flex justify-between items-start border-b border-gray-100 pb-8">
             <div>
