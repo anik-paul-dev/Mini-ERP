@@ -111,41 +111,41 @@ const SaleForm = () => {
   };
 
   if (fetchingSale) {
-    return <div className="p-8 text-center">Loading sale details...</div>;
+    return <div className="p-8 text-center text-slate-300">Loading sale details...</div>;
   }
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in">
       <div className="flex items-center space-x-4">
-        <Link to="/admin/sales" className="text-gray-400 hover:text-gray-600 transition-colors">
+        <Link to="/admin/sales" className="text-surface-400 hover:text-slate-200 transition-colors">
           <ArrowLeft size={24} />
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900">{isEditMode ? 'Edit Sale' : 'Create New Sale'}</h1>
+        <h1 className="text-2xl font-bold text-slate-100">{isEditMode ? 'Edit Sale' : 'Create New Sale'}</h1>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="card p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
           <div>
-            <h3 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2 mb-4">Customer Details</h3>
+            <h3 className="text-lg font-medium text-slate-100 border-b border-surface-700/50 pb-2 mb-4">Customer Details</h3>
             <div className="max-w-md">
-              <label className="block text-sm font-medium text-gray-700">Select Customer *</label>
-              <select {...register('customerPublicId')} className={`mt-1 input-field ${errors.customerPublicId ? 'border-red-500' : ''}`}>
+              <label className="block text-sm font-medium text-slate-300">Select Customer *</label>
+              <select {...register('customerPublicId')} className={`mt-1 input-field ${errors.customerPublicId ? 'border-rose-500' : ''}`}>
                 <option value="">-- Select a Customer --</option>
                 {customers.map(c => (
                   <option key={c.publicId} value={c.publicId}>{c.name} ({c.email || c.phone})</option>
                 ))}
               </select>
-              {errors.customerPublicId && <p className="mt-1 text-sm text-red-600">{errors.customerPublicId.message}</p>}
+              {errors.customerPublicId && <p className="mt-1 text-sm text-rose-400">{errors.customerPublicId.message}</p>}
             </div>
           </div>
 
           <div>
-            <div className="flex items-center justify-between border-b border-gray-100 pb-2 mb-4">
-              <h3 className="text-lg font-medium text-gray-900">Order Items</h3>
+            <div className="flex items-center justify-between border-b border-surface-700/50 pb-2 mb-4">
+              <h3 className="text-lg font-medium text-slate-100">Order Items</h3>
               <button
                 type="button"
                 onClick={() => append({ productPublicId: '', quantity: 1 })}
-                className="text-sm font-medium text-brand-600 hover:text-brand-700 flex items-center"
+                className="text-sm font-medium text-brand-400 hover:text-brand-300 flex items-center transition-colors"
               >
                 <Plus size={16} className="mr-1" /> Add Item
               </button>
@@ -157,12 +157,12 @@ const SaleForm = () => {
                 const selectedProduct = products.find(p => p.publicId === selectedProductPublicId);
 
                 return (
-                  <div key={field.id} className="flex items-end gap-4 bg-gray-50 p-4 rounded-lg">
-                    <div className="flex-1">
-                      <label className="block text-sm font-medium text-gray-700">Product</label>
+                  <div key={field.id} className="flex flex-col sm:flex-row items-end gap-4 bg-surface-800/50 border border-surface-700/50 p-4 rounded-lg">
+                    <div className="flex-1 w-full sm:w-auto">
+                      <label className="block text-sm font-medium text-slate-300">Product</label>
                       <select
                         {...register(`items.${index}.productPublicId`)}
-                        className={`mt-1 input-field ${errors.items?.[index]?.productPublicId ? 'border-red-500' : ''}`}
+                        className={`mt-1 input-field ${errors.items?.[index]?.productPublicId ? 'border-rose-500' : ''}`}
                       >
                         <option value="">-- Select Product --</option>
                         {products.map(p => (
@@ -172,27 +172,27 @@ const SaleForm = () => {
                         ))}
                       </select>
                       {errors.items?.[index]?.productPublicId && (
-                        <p className="mt-1 text-sm text-red-600">{errors.items[index]?.productPublicId?.message}</p>
+                        <p className="mt-1 text-sm text-rose-400">{errors.items[index]?.productPublicId?.message}</p>
                       )}
                     </div>
 
-                    <div className="w-32">
-                      <label className="block text-sm font-medium text-gray-700">Quantity</label>
+                    <div className="w-full sm:w-32">
+                      <label className="block text-sm font-medium text-slate-300">Quantity</label>
                       <input
                         type="number"
                         min="1"
                         max={selectedProduct?.stockQuantity || undefined}
                         {...register(`items.${index}.quantity`)}
-                        className={`mt-1 input-field ${errors.items?.[index]?.quantity ? 'border-red-500' : ''}`}
+                        className={`mt-1 input-field ${errors.items?.[index]?.quantity ? 'border-rose-500' : ''}`}
                       />
                       {errors.items?.[index]?.quantity && (
-                        <p className="mt-1 text-sm text-red-600">{errors.items[index]?.quantity?.message}</p>
+                        <p className="mt-1 text-sm text-rose-400">{errors.items[index]?.quantity?.message}</p>
                       )}
                     </div>
 
-                    <div className="w-32 pb-2 text-right">
-                      <span className="block text-sm text-gray-500">Subtotal</span>
-                      <span className="font-medium text-gray-900">
+                    <div className="w-full sm:w-32 sm:pb-2 sm:text-right flex sm:block justify-between items-center">
+                      <span className="block text-sm text-surface-400">Subtotal</span>
+                      <span className="font-medium text-slate-100">
                         ${selectedProduct ? ((selectedProduct.sellingPrice * (watchItems[index]?.quantity || 0)).toFixed(2)) : '0.00'}
                       </span>
                     </div>
@@ -200,7 +200,7 @@ const SaleForm = () => {
                     <button
                       type="button"
                       onClick={() => remove(index)}
-                      className="p-2 text-red-500 hover:text-red-700 mb-1"
+                      className="p-2 text-rose-400 hover:text-rose-300 mb-1 transition-colors self-end"
                       disabled={fields.length === 1}
                     >
                       <Trash2 size={20} />
@@ -209,18 +209,18 @@ const SaleForm = () => {
                 );
               })}
             </div>
-            {errors.items?.root && <p className="mt-2 text-sm text-red-600">{errors.items.root.message}</p>}
+            {errors.items?.root && <p className="mt-2 text-sm text-rose-400">{errors.items.root.message}</p>}
           </div>
 
-          <div className="flex items-center justify-between pt-6 border-t border-gray-200">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-6 border-t border-surface-700/50 gap-4">
             <div>
-              <p className="text-lg font-medium text-gray-900">Grand Total</p>
-              <p className="text-3xl font-bold text-brand-600">${grandTotal.toFixed(2)}</p>
+              <p className="text-lg font-medium text-slate-100">Grand Total</p>
+              <p className="text-3xl font-bold text-brand-400">${grandTotal.toFixed(2)}</p>
             </div>
 
-            <div className="flex space-x-3">
-              <Link to="/admin/sales" className="btn-outline">Cancel</Link>
-              <button type="submit" disabled={loading} className="btn-primary min-w-[150px]">
+            <div className="flex space-x-3 w-full sm:w-auto">
+              <Link to="/admin/sales" className="btn-outline flex-1 sm:flex-none text-center">Cancel</Link>
+              <button type="submit" disabled={loading} className="btn-primary flex-1 sm:flex-none min-w-[150px]">
                 {loading ? 'Processing...' : isEditMode ? 'Update Sale' : 'Complete Sale'}
               </button>
             </div>

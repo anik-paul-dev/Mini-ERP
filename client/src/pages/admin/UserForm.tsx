@@ -103,60 +103,60 @@ const UserForm = () => {
   };
 
   if (fetchingUser) {
-    return <div className="p-8 text-center">Loading user details...</div>;
+    return <div className="p-8 text-center text-slate-300">Loading user details...</div>;
   }
 
   return (
     <div className="max-w-2xl mx-auto space-y-6 animate-in fade-in">
       <div className="flex items-center space-x-4">
-        <Link to="/admin/users" className="text-gray-400 hover:text-gray-600 transition-colors">
+        <Link to="/admin/users" className="text-surface-400 hover:text-slate-200 transition-colors">
           <ArrowLeft size={24} />
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-2xl font-bold text-slate-100">
           {isEditMode ? 'Edit User' : 'Add New User'}
         </h1>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="card p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           
           <div>
-            <label className="block text-sm font-medium text-gray-700">Full Name *</label>
-            <input type="text" {...register('name')} className={`mt-1 input-field ${errors.name ? 'border-red-500' : ''}`} />
-            {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
+            <label className="block text-sm font-medium text-slate-300">Full Name *</label>
+            <input type="text" {...register('name')} className={`mt-1 input-field ${errors.name ? 'border-rose-500' : ''}`} />
+            {errors.name && <p className="mt-1 text-sm text-rose-400">{errors.name.message}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email Address *</label>
-            <input type="email" {...register('email')} className={`mt-1 input-field ${errors.email ? 'border-red-500' : ''}`} />
-            {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
+            <label className="block text-sm font-medium text-slate-300">Email Address *</label>
+            <input type="email" {...register('email')} className={`mt-1 input-field ${errors.email ? 'border-rose-500' : ''}`} />
+            {errors.email && <p className="mt-1 text-sm text-rose-400">{errors.email.message}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Role *</label>
-            <select {...register('rolePublicId')} className={`mt-1 input-field ${errors.rolePublicId ? 'border-red-500' : ''}`}>
+            <label className="block text-sm font-medium text-slate-300">Role *</label>
+            <select {...register('rolePublicId')} className={`mt-1 input-field ${errors.rolePublicId ? 'border-rose-500' : ''}`}>
               <option value="">-- Select Role --</option>
               {roles.map(role => (
                 <option key={role.publicId} value={role.publicId}>{role.name}</option>
               ))}
             </select>
-            {errors.rolePublicId && <p className="mt-1 text-sm text-red-600">{errors.rolePublicId.message}</p>}
+            {errors.rolePublicId && <p className="mt-1 text-sm text-rose-400">{errors.rolePublicId.message}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-slate-300">
               Password {isEditMode ? '(Leave blank to keep current)' : '*'}
             </label>
             <input 
               type="password" 
               {...register('password')} 
-              className={`mt-1 input-field ${errors.password ? 'border-red-500' : ''}`} 
+              className={`mt-1 input-field ${errors.password ? 'border-rose-500' : ''}`} 
             />
             {passwordValue && <PasswordStrength password={passwordValue} />}
-            {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>}
+            {errors.password && <p className="mt-1 text-sm text-rose-400">{errors.password.message}</p>}
           </div>
 
-          <div className="flex justify-end pt-4 border-t border-gray-100 space-x-3">
+          <div className="flex justify-end pt-4 border-t border-surface-700/50 space-x-3">
             <Link to="/admin/users" className="btn-outline">Cancel</Link>
             <button type="submit" disabled={loading} className="btn-primary min-w-[120px]">
               {loading ? 'Saving...' : 'Save User'}
@@ -169,5 +169,3 @@ const UserForm = () => {
 };
 
 export default UserForm;
-
-

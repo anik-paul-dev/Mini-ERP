@@ -43,12 +43,12 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageSelected, currentImage
       />
       
       {preview ? (
-        <div className="relative inline-block border rounded-lg overflow-hidden bg-gray-50">
-          <img src={preview} alt="Preview" className="h-40 w-auto object-contain" />
+        <div className="relative inline-block border border-surface-600 rounded-xl overflow-hidden bg-surface-900 shadow-sm group">
+          <img src={preview} alt="Preview" className="h-40 w-auto object-contain transition-transform duration-300 group-hover:scale-105" />
           <button
             type="button"
             onClick={clearImage}
-            className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 focus:outline-none"
+            className="absolute top-2 right-2 bg-rose-500/90 text-white rounded-full p-1.5 hover:bg-rose-600 focus:outline-none backdrop-blur-sm shadow-sm transition-colors"
           >
             <X size={16} />
           </button>
@@ -56,17 +56,19 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageSelected, currentImage
       ) : (
         <div 
           onClick={() => fileInputRef.current?.click()}
-          className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md cursor-pointer hover:border-brand-500 hover:bg-brand-50 transition-colors"
+          className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-surface-600 border-dashed rounded-xl cursor-pointer hover:border-brand-500 hover:bg-surface-700/50 transition-colors bg-surface-800"
         >
-          <div className="space-y-1 text-center">
-            <Upload className="mx-auto h-12 w-12 text-gray-400" />
-            <div className="flex text-sm text-gray-600 justify-center">
-              <span className="relative rounded-md font-medium text-brand-600 hover:text-brand-500 focus-within:outline-none">
+          <div className="space-y-2 text-center">
+            <div className="mx-auto h-12 w-12 text-surface-400 bg-surface-700 rounded-full flex items-center justify-center mb-4">
+              <Upload className="h-6 w-6" />
+            </div>
+            <div className="flex text-sm text-surface-300 justify-center">
+              <span className="relative rounded-md font-medium text-brand-400 hover:text-brand-300 focus-within:outline-none">
                 Upload a file
               </span>
               <p className="pl-1">or drag and drop</p>
             </div>
-            <p className="text-xs text-gray-500">PNG, JPG, WEBP up to 5MB</p>
+            <p className="text-xs text-surface-500">PNG, JPG, WEBP up to 5MB</p>
           </div>
         </div>
       )}

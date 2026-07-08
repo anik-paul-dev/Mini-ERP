@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { useAuth } from '../../hooks/useAuth';
 import { useApi } from '../../hooks/useApi';
 import { Link } from 'react-router-dom';
+import { Layers } from 'lucide-react';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -37,40 +38,46 @@ const Login = () => {
   };
 
   return (
-    <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-      <div className="mb-6 text-center">
-        <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">Mini ERP</h2>
-        <p className="mt-2 text-sm text-gray-600">Sign in to your account</p>
+    <div className="card max-w-md mx-auto p-8 relative overflow-hidden backdrop-blur-md">
+      <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-brand-500/10 blur-3xl"></div>
+      <div className="absolute -bottom-12 -left-12 w-32 h-32 rounded-full bg-brand-600/10 blur-3xl"></div>
+      
+      <div className="mb-8 text-center relative z-10">
+        <div className="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-gradient-to-br from-brand-600 to-brand-500 text-white mb-4 shadow-lg shadow-brand-500/30">
+          <Layers size={24} />
+        </div>
+        <h2 className="text-3xl font-extrabold text-slate-100 tracking-tight">Mini ERP</h2>
+        <p className="mt-2 text-sm text-surface-400">Sign in to your account</p>
       </div>
 
-      <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+      <form className="space-y-6 relative z-10" onSubmit={handleSubmit(onSubmit)}>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Email address</label>
+          <label className="block text-sm font-medium text-slate-300">Email address</label>
           <div className="mt-1">
             <input
               type="email"
               {...register('email')}
-              className={`input-field ${errors.email ? 'border-red-500 focus:ring-red-500' : ''}`}
+              className={`input-field ${errors.email ? 'border-rose-500 focus:ring-rose-500' : ''}`}
             />
-            {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
+            {errors.email && <p className="mt-1 text-sm text-rose-400">{errors.email.message}</p>}
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Password</label>
+          <label className="block text-sm font-medium text-slate-300">Password</label>
           <div className="mt-1">
             <input
               type="password"
               {...register('password')}
-              className={`input-field ${errors.password ? 'border-red-500 focus:ring-red-500' : ''}`}
+              className={`input-field ${errors.password ? 'border-rose-500 focus:ring-rose-500' : ''}`}
             />
-            {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>}
+            {errors.password && <p className="mt-1 text-sm text-rose-400">{errors.password.message}</p>}
           </div>
         </div>
 
         <div className="flex items-center justify-between">
           <div className="text-sm">
-            <Link to="/forgot-password" className="font-medium text-brand-600 hover:text-brand-500">
+            <Link to="/forgot-password" className="font-medium text-brand-400 hover:text-brand-300 transition-colors">
               Forgot your password?
             </Link>
           </div>
@@ -80,7 +87,7 @@ const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 disabled:opacity-50 transition-colors"
+            className="w-full btn-primary py-2.5 flex items-center justify-center text-sm shadow-brand-500/30"
           >
             {loading ? (
               <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -92,13 +99,13 @@ const Login = () => {
         </div>
       </form>
       
-      <div className="mt-6 border-t border-gray-200 pt-4 text-xs text-center text-gray-500">
+      <div className="mt-8 border-t border-surface-700 pt-6 text-xs text-center text-surface-400 relative z-10">
         Demo Accounts:
-        <br />admin@minierp.com / password123
+        <br />
+        <span className="inline-block mt-2 font-mono text-slate-300 bg-surface-700/50 px-3 py-1 rounded border border-surface-600">admin@minierp.com / password123</span>
       </div>
     </div>
   );
 };
 
 export default Login;
-

@@ -100,26 +100,26 @@ const ProductForm = () => {
   };
 
   if (fetchingProduct) {
-    return <div className="p-8 text-center">Loading product details...</div>;
+    return <div className="p-8 text-center text-slate-300">Loading product details...</div>;
   }
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in">
       <div className="flex items-center space-x-4">
-        <Link to="/manager/products" className="text-gray-400 hover:text-gray-600 transition-colors">
+        <Link to="/manager/products" className="text-surface-400 hover:text-slate-200 transition-colors">
           <ArrowLeft size={24} />
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-2xl font-bold text-slate-100">
           {isEditMode ? 'Edit Product' : 'Add New Product'}
         </h1>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="card p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Product Image {isEditMode ? '' : '*'}</label>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Product Image {isEditMode ? '' : '*'}</label>
               <ImageUpload 
                 onImageSelected={setImageFile} 
                 currentImageUrl={currentImage} 
@@ -127,43 +127,43 @@ const ProductForm = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Product Name *</label>
-              <input type="text" {...register('name')} className={`mt-1 input-field ${errors.name ? 'border-red-500' : ''}`} />
-              {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
+              <label className="block text-sm font-medium text-slate-300">Product Name *</label>
+              <input type="text" {...register('name')} className={`mt-1 input-field ${errors.name ? 'border-rose-500' : ''}`} />
+              {errors.name && <p className="mt-1 text-sm text-rose-400">{errors.name.message}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">SKU *</label>
-              <input type="text" {...register('sku')} className={`mt-1 input-field ${errors.sku ? 'border-red-500' : ''}`} />
-              {errors.sku && <p className="mt-1 text-sm text-red-600">{errors.sku.message}</p>}
+              <label className="block text-sm font-medium text-slate-300">SKU *</label>
+              <input type="text" {...register('sku')} className={`mt-1 input-field ${errors.sku ? 'border-rose-500' : ''}`} />
+              {errors.sku && <p className="mt-1 text-sm text-rose-400">{errors.sku.message}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Category *</label>
-              <input type="text" {...register('category')} className={`mt-1 input-field ${errors.category ? 'border-red-500' : ''}`} />
-              {errors.category && <p className="mt-1 text-sm text-red-600">{errors.category.message}</p>}
+              <label className="block text-sm font-medium text-slate-300">Category *</label>
+              <input type="text" {...register('category')} className={`mt-1 input-field ${errors.category ? 'border-rose-500' : ''}`} />
+              {errors.category && <p className="mt-1 text-sm text-rose-400">{errors.category.message}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Stock Quantity *</label>
-              <input type="number" {...register('stockQuantity')} className={`mt-1 input-field ${errors.stockQuantity ? 'border-red-500' : ''}`} />
-              {errors.stockQuantity && <p className="mt-1 text-sm text-red-600">{errors.stockQuantity.message}</p>}
+              <label className="block text-sm font-medium text-slate-300">Stock Quantity *</label>
+              <input type="number" {...register('stockQuantity')} className={`mt-1 input-field ${errors.stockQuantity ? 'border-rose-500' : ''}`} />
+              {errors.stockQuantity && <p className="mt-1 text-sm text-rose-400">{errors.stockQuantity.message}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Purchase Price ($) *</label>
-              <input type="number" step="0.01" {...register('purchasePrice')} className={`mt-1 input-field ${errors.purchasePrice ? 'border-red-500' : ''}`} />
-              {errors.purchasePrice && <p className="mt-1 text-sm text-red-600">{errors.purchasePrice.message}</p>}
+              <label className="block text-sm font-medium text-slate-300">Purchase Price ($) *</label>
+              <input type="number" step="0.01" {...register('purchasePrice')} className={`mt-1 input-field ${errors.purchasePrice ? 'border-rose-500' : ''}`} />
+              {errors.purchasePrice && <p className="mt-1 text-sm text-rose-400">{errors.purchasePrice.message}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Selling Price ($) *</label>
-              <input type="number" step="0.01" {...register('sellingPrice')} className={`mt-1 input-field ${errors.sellingPrice ? 'border-red-500' : ''}`} />
-              {errors.sellingPrice && <p className="mt-1 text-sm text-red-600">{errors.sellingPrice.message}</p>}
+              <label className="block text-sm font-medium text-slate-300">Selling Price ($) *</label>
+              <input type="number" step="0.01" {...register('sellingPrice')} className={`mt-1 input-field ${errors.sellingPrice ? 'border-rose-500' : ''}`} />
+              {errors.sellingPrice && <p className="mt-1 text-sm text-rose-400">{errors.sellingPrice.message}</p>}
             </div>
           </div>
 
-          <div className="flex justify-end pt-4 border-t border-gray-100 space-x-3">
+          <div className="flex justify-end pt-4 border-t border-surface-700/50 space-x-3">
             <Link to="/manager/products" className="btn-outline">Cancel</Link>
             <button type="submit" disabled={loading} className="btn-primary min-w-[120px]">
               {loading ? 'Saving...' : 'Save Product'}
@@ -176,4 +176,3 @@ const ProductForm = () => {
 };
 
 export default ProductForm;
-

@@ -80,28 +80,28 @@ const Profile = () => {
   return (
     <div className="space-y-6 animate-in fade-in max-w-3xl mx-auto">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-2xl font-bold text-gray-900">My Profile</h1>
+        <h1 className="text-2xl font-bold text-slate-100">My Profile</h1>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="border-b border-gray-100">
+      <div className="card">
+        <div className="border-b border-surface-700/50">
           <nav className="flex -mb-px">
             <button
               onClick={() => setActiveTab('profile')}
-              className={`w-1/2 py-4 px-1 text-center border-b-2 font-medium text-sm ${
+              className={`w-1/2 py-4 px-1 text-center border-b-2 font-medium text-sm transition-colors ${
                 activeTab === 'profile'
-                  ? 'border-brand-500 text-brand-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-brand-500 text-brand-400 bg-surface-700/20'
+                  : 'border-transparent text-surface-400 hover:text-slate-300 hover:border-surface-500'
               }`}
             >
               Profile Information
             </button>
             <button
               onClick={() => setActiveTab('password')}
-              className={`w-1/2 py-4 px-1 text-center border-b-2 font-medium text-sm ${
+              className={`w-1/2 py-4 px-1 text-center border-b-2 font-medium text-sm transition-colors ${
                 activeTab === 'password'
-                  ? 'border-brand-500 text-brand-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-brand-500 text-brand-400 bg-surface-700/20'
+                  : 'border-transparent text-surface-400 hover:text-slate-300 hover:border-surface-500'
               }`}
             >
               Change Password
@@ -113,38 +113,38 @@ const Profile = () => {
           {activeTab === 'profile' && (
             <form onSubmit={handleSubmitProfile(onProfileSubmit)} className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Role</label>
+                <label className="block text-sm font-medium text-slate-300">Role</label>
                 <div className="mt-1">
                   <input
                     type="text"
                     disabled
                     value={user?.roleName || ''}
-                    className="input-field bg-gray-50 text-gray-500 cursor-not-allowed"
+                    className="input-field bg-surface-700/50 text-surface-400 cursor-not-allowed opacity-70 border-surface-600"
                   />
                 </div>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700">Email</label>
+                <label className="block text-sm font-medium text-slate-300">Email</label>
                 <div className="mt-1">
                   <input
                     type="text"
                     disabled
                     value={user?.email || ''}
-                    className="input-field bg-gray-50 text-gray-500 cursor-not-allowed"
+                    className="input-field bg-surface-700/50 text-surface-400 cursor-not-allowed opacity-70 border-surface-600"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Name</label>
+                <label className="block text-sm font-medium text-slate-300">Name</label>
                 <div className="mt-1">
                   <input
                     type="text"
                     {...registerProfile('name')}
-                    className={`input-field ${profileErrors.name ? 'border-red-500 focus:ring-red-500' : ''}`}
+                    className={`input-field ${profileErrors.name ? 'border-rose-500 focus:ring-rose-500' : ''}`}
                   />
-                  {profileErrors.name && <p className="mt-1 text-sm text-red-600">{profileErrors.name.message}</p>}
+                  {profileErrors.name && <p className="mt-1 text-sm text-rose-400">{profileErrors.name.message}</p>}
                 </div>
               </div>
 
@@ -159,39 +159,39 @@ const Profile = () => {
           {activeTab === 'password' && (
             <form onSubmit={handleSubmitPassword(onPasswordSubmit)} className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Current Password</label>
+                <label className="block text-sm font-medium text-slate-300">Current Password</label>
                 <div className="mt-1">
                   <input
                     type="password"
                     {...registerPassword('currentPassword')}
-                    className={`input-field ${passwordErrors.currentPassword ? 'border-red-500 focus:ring-red-500' : ''}`}
+                    className={`input-field ${passwordErrors.currentPassword ? 'border-rose-500 focus:ring-rose-500' : ''}`}
                   />
-                  {passwordErrors.currentPassword && <p className="mt-1 text-sm text-red-600">{passwordErrors.currentPassword.message}</p>}
+                  {passwordErrors.currentPassword && <p className="mt-1 text-sm text-rose-400">{passwordErrors.currentPassword.message}</p>}
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">New Password</label>
+                <label className="block text-sm font-medium text-slate-300">New Password</label>
                 <div className="mt-1">
                   <input
                     type="password"
                     {...registerPassword('newPassword')}
-                    className={`input-field ${passwordErrors.newPassword ? 'border-red-500 focus:ring-red-500' : ''}`}
+                    className={`input-field ${passwordErrors.newPassword ? 'border-rose-500 focus:ring-rose-500' : ''}`}
                   />
                   <PasswordStrength password={newPasswordValue} />
-                  {passwordErrors.newPassword && <p className="mt-1 text-sm text-red-600">{passwordErrors.newPassword.message}</p>}
+                  {passwordErrors.newPassword && <p className="mt-1 text-sm text-rose-400">{passwordErrors.newPassword.message}</p>}
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Confirm New Password</label>
+                <label className="block text-sm font-medium text-slate-300">Confirm New Password</label>
                 <div className="mt-1">
                   <input
                     type="password"
                     {...registerPassword('confirmPassword')}
-                    className={`input-field ${passwordErrors.confirmPassword ? 'border-red-500 focus:ring-red-500' : ''}`}
+                    className={`input-field ${passwordErrors.confirmPassword ? 'border-rose-500 focus:ring-rose-500' : ''}`}
                   />
-                  {passwordErrors.confirmPassword && <p className="mt-1 text-sm text-red-600">{passwordErrors.confirmPassword.message}</p>}
+                  {passwordErrors.confirmPassword && <p className="mt-1 text-sm text-rose-400">{passwordErrors.confirmPassword.message}</p>}
                 </div>
               </div>
 

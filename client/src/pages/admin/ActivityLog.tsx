@@ -35,13 +35,13 @@ const ActivityLog = () => {
   const getActionColor = (action: string) => {
     switch (action) {
       case 'create':
-        return 'bg-green-100 text-green-800 border-green-200';
+        return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
       case 'update':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
+        return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
       case 'delete':
-        return 'bg-red-100 text-red-800 border-red-200';
+        return 'bg-rose-500/10 text-rose-400 border-rose-500/20';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return 'bg-surface-700 text-slate-300 border-surface-600';
     }
   };
 
@@ -58,18 +58,18 @@ const ActivityLog = () => {
     { 
       header: 'Type', 
       accessor: 'entityType',
-      cell: (item: Activity) => <span className="capitalize text-gray-600">{item.entityType}</span>
+      cell: (item: Activity) => <span className="capitalize text-slate-300">{item.entityType}</span>
     },
     { 
       header: 'Entity Name', 
       accessor: 'entityName',
-      cell: (item: Activity) => <span className="font-medium text-gray-900">{item.entityName}</span>
+      cell: (item: Activity) => <span className="font-medium text-slate-100">{item.entityName}</span>
     },
     { header: 'Performed By', accessor: 'performerName' },
     { 
       header: 'Details', 
       accessor: 'details',
-      cell: (item: Activity) => <span className="text-gray-500 text-sm">{item.details}</span>
+      cell: (item: Activity) => <span className="text-surface-400 text-sm">{item.details}</span>
     },
     { 
       header: 'Date', 
@@ -81,14 +81,14 @@ const ActivityLog = () => {
   return (
     <div className="space-y-6 animate-in fade-in">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center">
-          <ActivityIcon className="mr-3 text-brand-600" size={24} />
+        <h1 className="text-2xl font-bold text-slate-100 flex items-center">
+          <ActivityIcon className="mr-3 text-brand-400" size={24} />
           System Activity Log
         </h1>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-4 border-b border-gray-100">
+      <div className="card">
+        <div className="p-4 border-b border-surface-700/50 bg-surface-800/50">
           <SearchBar onSearch={(val) => { setSearchTerm(val); setPage(1); }} placeholder="Search activities..." />
         </div>
         

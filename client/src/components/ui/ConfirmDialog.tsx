@@ -26,19 +26,19 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Confirmation Required" maxWidth="sm">
       <div className="flex flex-col items-center text-center">
-        <div className={`mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full sm:h-10 sm:w-10 mb-4 ${isDestructive ? 'bg-red-100 text-red-600' : 'bg-brand-100 text-brand-600'}`}>
-          <AlertTriangle className="h-6 w-6" aria-hidden="true" />
+        <div className={`mx-auto flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full mb-5 shadow-inner ${isDestructive ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'bg-brand-500/10 text-brand-400 border border-brand-500/20'}`}>
+          <AlertTriangle className="h-7 w-7" aria-hidden="true" />
         </div>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">{title}</h3>
-        <p className="text-sm text-gray-500 mb-6">{message}</p>
+        <h3 className="text-xl font-semibold text-slate-100 mb-2">{title}</h3>
+        <p className="text-sm text-surface-300 mb-8 px-2">{message}</p>
         
-        <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse w-full gap-2">
+        <div className="w-full flex flex-col sm:flex-row-reverse gap-3">
           <button
             type="button"
-            className={`w-full inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-base font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 sm:w-auto sm:text-sm ${
+            className={`w-full inline-flex justify-center rounded-lg border border-transparent px-4 py-2.5 text-base font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface-800 sm:w-auto sm:text-sm transition-colors ${
               isDestructive 
-                ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500' 
-                : 'bg-brand-600 hover:bg-brand-700 focus:ring-brand-500'
+                ? 'bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 focus:ring-rose-500' 
+                : 'bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 focus:ring-brand-500'
             }`}
             onClick={() => {
               onConfirm();
@@ -49,7 +49,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           </button>
           <button
             type="button"
-            className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 sm:mt-0 sm:w-auto sm:text-sm"
+            className="w-full inline-flex justify-center rounded-lg border border-surface-600 bg-surface-700 px-4 py-2.5 text-base font-medium text-slate-300 shadow-sm hover:bg-surface-600 hover:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 focus:ring-offset-surface-800 sm:w-auto sm:text-sm transition-colors"
             onClick={onClose}
           >
             {cancelText}

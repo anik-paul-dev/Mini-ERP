@@ -86,38 +86,38 @@ const RoleForm = () => {
   };
 
   if (fetchingRole) {
-    return <div className="p-8 text-center">Loading role details...</div>;
+    return <div className="p-8 text-center text-slate-300">Loading role details...</div>;
   }
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in">
       <div className="flex items-center space-x-4">
-        <Link to="/admin/roles" className="text-gray-400 hover:text-gray-600 transition-colors">
+        <Link to="/admin/roles" className="text-surface-400 hover:text-slate-200 transition-colors">
           <ArrowLeft size={24} />
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-2xl font-bold text-slate-100">
           {isEditMode ? 'Edit Role & Permissions' : 'Create New Role'}
         </h1>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="card p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Role Name *</label>
+              <label className="block text-sm font-medium text-slate-300">Role Name *</label>
               <input 
                 type="text" 
                 {...register('name')} 
                 disabled={isSystemRole}
-                className={`mt-1 input-field ${errors.name ? 'border-red-500' : ''} ${isSystemRole ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`} 
+                className={`mt-1 input-field ${errors.name ? 'border-rose-500' : ''} ${isSystemRole ? 'bg-surface-800/50 text-surface-500 cursor-not-allowed opacity-70 border-surface-600/50' : ''}`} 
               />
-              {isSystemRole && <p className="mt-1 text-xs text-gray-500">System role names cannot be changed.</p>}
-              {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
+              {isSystemRole && <p className="mt-1 text-xs text-surface-500">System role names cannot be changed.</p>}
+              {errors.name && <p className="mt-1 text-sm text-rose-400">{errors.name.message}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Description</label>
+              <label className="block text-sm font-medium text-slate-300">Description</label>
               <input 
                 type="text" 
                 {...register('description')} 
@@ -127,10 +127,10 @@ const RoleForm = () => {
           </div>
 
           <div>
-            <div className="border-b border-gray-100 pb-2 mb-4">
-              <h3 className="text-lg font-medium text-gray-900">Permissions *</h3>
-              <p className="text-sm text-gray-500">Select the permissions to assign to this role.</p>
-              {errors.permissions && <p className="mt-1 text-sm text-red-600">{errors.permissions.message}</p>}
+            <div className="border-b border-surface-700/50 pb-2 mb-4">
+              <h3 className="text-lg font-medium text-slate-100">Permissions *</h3>
+              <p className="text-sm text-surface-400">Select the permissions to assign to this role.</p>
+              {errors.permissions && <p className="mt-1 text-sm text-rose-400">{errors.permissions.message}</p>}
             </div>
 
             <Controller
@@ -139,8 +139,8 @@ const RoleForm = () => {
               render={({ field }) => (
                 <div className="space-y-6">
                   {Object.entries(PERMISSION_GROUPS).map(([groupName, perms]) => (
-                    <div key={groupName} className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                      <h4 className="font-semibold text-gray-800 mb-3">{groupName}</h4>
+                    <div key={groupName} className="bg-surface-800/50 p-4 rounded-lg border border-surface-700/50">
+                      <h4 className="font-semibold text-slate-200 mb-3">{groupName}</h4>
                       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
                         {perms.map(permission => {
                           const isChecked = field.value.includes(permission);
@@ -158,9 +158,9 @@ const RoleForm = () => {
                                     field.onChange(field.value.filter((p: string) => p !== permission));
                                   }
                                 }}
-                                className="rounded text-brand-600 focus:ring-brand-500 border-gray-300"
+                                className="rounded text-brand-500 bg-surface-900 border-surface-600 focus:ring-brand-500 focus:ring-offset-surface-800"
                               />
-                              <span className="text-sm text-gray-700 capitalize">{action}</span>
+                              <span className="text-sm text-slate-300 capitalize">{action}</span>
                             </label>
                           );
                         })}
@@ -172,7 +172,7 @@ const RoleForm = () => {
             />
           </div>
 
-          <div className="flex justify-end pt-6 border-t border-gray-100 space-x-3">
+          <div className="flex justify-end pt-6 border-t border-surface-700/50 space-x-3">
             <Link to="/admin/roles" className="btn-outline">Cancel</Link>
             <button type="submit" disabled={loading} className="btn-primary min-w-[120px]">
               {loading ? 'Saving...' : 'Save Role'}
@@ -185,5 +185,3 @@ const RoleForm = () => {
 };
 
 export default RoleForm;
-
-

@@ -51,10 +51,10 @@ const Customers = () => {
       accessor: 'actions',
       cell: (item: Customer) => (
         <div className="flex space-x-3">
-          <Link to={`/manager/customers/${item.publicId}/edit`} className="text-brand-600 hover:text-brand-900">
+          <Link to={`/manager/customers/${item.publicId}/edit`} className="text-brand-400 hover:text-brand-300 transition-colors">
             <Edit2 size={18} />
           </Link>
-          <button onClick={() => setCustomerToDelete(item)} className="text-red-600 hover:text-red-900">
+          <button onClick={() => setCustomerToDelete(item)} className="text-rose-400 hover:text-rose-300 transition-colors">
             <Trash2 size={18} />
           </button>
         </div>
@@ -65,15 +65,15 @@ const Customers = () => {
   return (
     <div className="space-y-6 animate-in fade-in">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-2xl font-bold text-gray-900">Customers</h1>
+        <h1 className="text-2xl font-bold text-slate-100">Customers</h1>
         <Link to="/manager/customers/new" className="btn-primary">
           <Plus size={18} className="mr-2" />
           Add Customer
         </Link>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-4 border-b border-gray-100">
+      <div className="card">
+        <div className="p-4 border-b border-surface-700/50 bg-surface-800/50">
           <SearchBar onSearch={(val) => { setSearchTerm(val); setPage(1); }} placeholder="Search customers..." />
         </div>
         
@@ -107,4 +107,3 @@ const Customers = () => {
 };
 
 export default Customers;
-

@@ -6,8 +6,8 @@ const PublicLayout = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-main">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-500"></div>
       </div>
     );
   }
@@ -17,7 +17,7 @@ const PublicLayout = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-50 to-white p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-main p-4">
       <div className="w-full max-w-md">
         <Outlet />
       </div>

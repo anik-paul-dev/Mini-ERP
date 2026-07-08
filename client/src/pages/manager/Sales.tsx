@@ -84,7 +84,7 @@ const Sales = () => {
     {
       header: 'Sale ID',
       accessor: 'publicId',
-      cell: (item: Sale) => <span className="font-mono text-gray-600">{item.publicId.substring(0, 8)}</span>
+      cell: (item: Sale) => <span className="font-mono text-surface-400">{item.publicId.substring(0, 8)}</span>
     },
     { header: 'Customer', accessor: 'customerName' },
     {
@@ -96,7 +96,7 @@ const Sales = () => {
       header: 'Status',
       accessor: 'status',
       cell: (item: Sale) => (
-        <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${item.status === 'canceled' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+        <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold border ${item.status === 'canceled' ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'}`}>
           {item.status === 'canceled' ? 'Canceled' : 'Active'}
         </span>
       )
@@ -104,7 +104,7 @@ const Sales = () => {
     {
       header: 'Grand Total',
       accessor: 'grandTotal',
-      cell: (item: Sale) => <span className={`font-semibold ${item.status === 'canceled' ? 'text-red-600 line-through' : 'text-brand-600'}`}>{formatCurrency(item.grandTotal)}</span>
+      cell: (item: Sale) => <span className={`font-semibold ${item.status === 'canceled' ? 'text-rose-400 line-through' : 'text-brand-400'}`}>{formatCurrency(item.grandTotal)}</span>
     },
     { header: 'Created By', accessor: 'createdByName' },
     {
@@ -117,21 +117,21 @@ const Sales = () => {
       accessor: 'actions',
       cell: (item: Sale) => (
         <div className="flex space-x-2">
-          <Link to={`/manager/sales/${item.publicId}`} className="p-1 text-gray-500 hover:text-brand-600 transition-colors" title="View Invoice">
+          <Link to={`/manager/sales/${item.publicId}`} className="p-1 text-surface-400 hover:text-brand-400 transition-colors" title="View Invoice">
             <Eye size={18} />
           </Link>
           {canUpdateSales && item.status !== 'canceled' && (
-            <Link to={`/manager/sales/${item.publicId}/edit`} className="p-1 text-gray-500 hover:text-blue-600 transition-colors" title="Edit Sale">
+            <Link to={`/manager/sales/${item.publicId}/edit`} className="p-1 text-surface-400 hover:text-blue-400 transition-colors" title="Edit Sale">
               <Edit size={18} />
             </Link>
           )}
           {canCancelSales && item.status !== 'canceled' && (
-            <button onClick={() => handleCancelSale(item)} className="p-1 text-gray-500 hover:text-amber-600 transition-colors" title="Cancel Sale">
+            <button onClick={() => handleCancelSale(item)} className="p-1 text-surface-400 hover:text-amber-400 transition-colors" title="Cancel Sale">
               <XCircle size={18} />
             </button>
           )}
           {canDeleteSales && (
-            <button onClick={() => handleDeleteSale(item)} className="p-1 text-gray-500 hover:text-red-600 transition-colors" title="Delete Sale">
+            <button onClick={() => handleDeleteSale(item)} className="p-1 text-surface-400 hover:text-rose-400 transition-colors" title="Delete Sale">
               <Trash2 size={18} />
             </button>
           )}
@@ -143,7 +143,7 @@ const Sales = () => {
   return (
     <div className="space-y-6 animate-in fade-in">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-2xl font-bold text-gray-900">Sales</h1>
+        <h1 className="text-2xl font-bold text-slate-100">Sales</h1>
         <div className="flex space-x-3">
           {canExportSales && (
             <button onClick={handleExport} className="btn-secondary flex items-center">
@@ -160,8 +160,8 @@ const Sales = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-4 border-b border-gray-100 space-y-3">
+      <div className="card">
+        <div className="p-4 border-b border-surface-700/50 bg-surface-800/50 space-y-3">
           <SearchBar onSearch={(val) => { setSearchTerm(val); setPage(1); }} placeholder="Search sales by customer..." />
           <div className="flex flex-wrap gap-2">
             {[
@@ -172,7 +172,7 @@ const Sales = () => {
               <button
                 key={filter.label}
                 onClick={() => { setStatusFilter(filter.value); setPage(1); }}
-                className={`px-3 py-1.5 rounded-md text-sm font-medium border ${statusFilter === filter.value ? 'bg-brand-600 text-white border-brand-600' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'}`}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${statusFilter === filter.value ? 'bg-gradient-to-r from-brand-600 to-brand-500 text-white border-brand-500/50 shadow-md' : 'bg-surface-800/50 text-surface-300 border-surface-600 hover:bg-surface-700/50 hover:text-slate-200'}`}
               >
                 {filter.label}
               </button>
@@ -191,4 +191,3 @@ const Sales = () => {
 };
 
 export default Sales;
-

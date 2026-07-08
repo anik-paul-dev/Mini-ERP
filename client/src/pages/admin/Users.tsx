@@ -49,9 +49,9 @@ const Users = () => {
       header: 'Role', 
       accessor: 'roleName',
       cell: (item: User) => (
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-          item.roleName === 'Admin' ? 'bg-purple-100 text-purple-800' :
-          item.roleName === 'Manager' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
+          item.roleName === 'Admin' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
+          item.roleName === 'Manager' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' : 'bg-surface-700/50 text-slate-300 border-surface-600'
         }`}>
           {item.roleName}
         </span>
@@ -61,20 +61,20 @@ const Users = () => {
       header: 'Status', 
       accessor: 'isActive',
       cell: (item: any) => item.isActive ? 
-        <span className="flex items-center text-green-600 text-sm"><CheckCircle size={16} className="mr-1" /> Active</span> : 
-        <span className="flex items-center text-red-600 text-sm"><XCircle size={16} className="mr-1" /> Inactive</span>
+        <span className="flex items-center text-emerald-400 text-sm"><CheckCircle size={16} className="mr-1" /> Active</span> : 
+        <span className="flex items-center text-rose-400 text-sm"><XCircle size={16} className="mr-1" /> Inactive</span>
     },
     {
       header: 'Actions',
       accessor: 'actions',
       cell: (item: User) => (
         <div className="flex space-x-3">
-          <Link to={`/admin/users/${item.publicId}/edit`} className="text-brand-600 hover:text-brand-900">
+          <Link to={`/admin/users/${item.publicId}/edit`} className="text-brand-400 hover:text-brand-300 transition-colors">
             <Edit2 size={18} />
           </Link>
           <button 
             onClick={() => setUserToDelete(item)} 
-            className="text-red-600 hover:text-red-900 disabled:opacity-30 disabled:cursor-not-allowed"
+            className="text-rose-400 hover:text-rose-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             disabled={item.roleName === 'Admin'} // Protect Admin deletion
           >
             <Trash2 size={18} />
@@ -87,15 +87,15 @@ const Users = () => {
   return (
     <div className="space-y-6 animate-in fade-in">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-2xl font-bold text-gray-900">System Users</h1>
+        <h1 className="text-2xl font-bold text-slate-100">System Users</h1>
         <Link to="/admin/users/new" className="btn-primary">
           <Plus size={18} className="mr-2" />
           Add User
         </Link>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-4 border-b border-gray-100">
+      <div className="card">
+        <div className="p-4 border-b border-surface-700/50 bg-surface-800/50">
           <SearchBar onSearch={(val) => { setSearchTerm(val); setPage(1); }} placeholder="Search users by name or email..." />
         </div>
         
@@ -129,4 +129,3 @@ const Users = () => {
 };
 
 export default Users;
-

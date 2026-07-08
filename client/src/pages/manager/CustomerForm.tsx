@@ -69,53 +69,53 @@ const CustomerForm = () => {
   };
 
   if (fetchingCustomer) {
-    return <div className="p-8 text-center">Loading customer details...</div>;
+    return <div className="p-8 text-center text-slate-300">Loading customer details...</div>;
   }
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in">
       <div className="flex items-center space-x-4">
-        <Link to="/manager/customers" className="text-gray-400 hover:text-gray-600 transition-colors">
+        <Link to="/manager/customers" className="text-surface-400 hover:text-slate-200 transition-colors">
           <ArrowLeft size={24} />
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-2xl font-bold text-slate-100">
           {isEditMode ? 'Edit Customer' : 'Add New Customer'}
         </h1>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="card p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Customer Name *</label>
-              <input type="text" {...register('name')} className={`mt-1 input-field ${errors.name ? 'border-red-500' : ''}`} />
-              {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
+              <label className="block text-sm font-medium text-slate-300">Customer Name *</label>
+              <input type="text" {...register('name')} className={`mt-1 input-field ${errors.name ? 'border-rose-500' : ''}`} />
+              {errors.name && <p className="mt-1 text-sm text-rose-400">{errors.name.message}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Email Address</label>
-              <input type="email" {...register('email')} className={`mt-1 input-field ${errors.email ? 'border-red-500' : ''}`} />
-              {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
+              <label className="block text-sm font-medium text-slate-300">Email Address</label>
+              <input type="email" {...register('email')} className={`mt-1 input-field ${errors.email ? 'border-rose-500' : ''}`} />
+              {errors.email && <p className="mt-1 text-sm text-rose-400">{errors.email.message}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Phone Number</label>
-              <input type="text" {...register('phone')} className={`mt-1 input-field ${errors.phone ? 'border-red-500' : ''}`} />
-              {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>}
+              <label className="block text-sm font-medium text-slate-300">Phone Number</label>
+              <input type="text" {...register('phone')} className={`mt-1 input-field ${errors.phone ? 'border-rose-500' : ''}`} />
+              {errors.phone && <p className="mt-1 text-sm text-rose-400">{errors.phone.message}</p>}
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700">Address</label>
+              <label className="block text-sm font-medium text-slate-300">Address</label>
               <textarea 
                 rows={3}
                 {...register('address')} 
-                className={`mt-1 input-field ${errors.address ? 'border-red-500' : ''}`} 
+                className={`mt-1 input-field ${errors.address ? 'border-rose-500' : ''}`} 
               />
-              {errors.address && <p className="mt-1 text-sm text-red-600">{errors.address.message}</p>}
+              {errors.address && <p className="mt-1 text-sm text-rose-400">{errors.address.message}</p>}
             </div>
           </div>
 
-          <div className="flex justify-end pt-4 border-t border-gray-100 space-x-3">
+          <div className="flex justify-end pt-4 border-t border-surface-700/50 space-x-3">
             <Link to="/manager/customers" className="btn-outline">Cancel</Link>
             <button type="submit" disabled={loading} className="btn-primary min-w-[120px]">
               {loading ? 'Saving...' : 'Save Customer'}
@@ -128,4 +128,3 @@ const CustomerForm = () => {
 };
 
 export default CustomerForm;
-

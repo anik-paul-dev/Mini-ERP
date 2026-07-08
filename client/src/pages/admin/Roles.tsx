@@ -27,8 +27,8 @@ const Roles = () => {
     <div className="space-y-6 animate-in fade-in">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Roles & Permissions</h1>
-          <p className="text-sm text-gray-500 mt-1">Manage system roles and their granted permissions.</p>
+          <h1 className="text-2xl font-bold text-slate-100">Roles & Permissions</h1>
+          <p className="text-sm text-surface-400 mt-1">Manage system roles and their granted permissions.</p>
         </div>
         <Link to="/admin/roles/new" className="btn-primary">
           <Plus size={18} className="mr-2" />
@@ -38,30 +38,30 @@ const Roles = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {isLoading ? (
-          <div className="col-span-full py-12 text-center text-gray-500">Loading roles...</div>
+          <div className="col-span-full py-12 text-center text-surface-400">Loading roles...</div>
         ) : roles?.map((role) => (
-          <div key={role.publicId} className="group bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col hover:shadow-md transition-shadow">
+          <div key={role.publicId} className="group card flex flex-col hover:shadow-card-hover transition-all duration-300">
             <div className={`p-4 border-b flex justify-between items-start ${
-              role.name === 'Admin' ? 'bg-purple-50 border-purple-100' :
-              role.name === 'Manager' ? 'bg-blue-50 border-blue-100' : 'bg-gray-50 border-gray-100'
+              role.name === 'Admin' ? 'bg-purple-500/5 border-purple-500/20' :
+              role.name === 'Manager' ? 'bg-blue-500/5 border-blue-500/20' : 'bg-surface-800/50 border-surface-700/50'
             }`}>
               <div>
                 <div className="flex items-center gap-2">
                   <Shield className={
-                    role.name === 'Admin' ? 'text-purple-600' :
-                    role.name === 'Manager' ? 'text-blue-600' : 'text-gray-600'
+                    role.name === 'Admin' ? 'text-purple-400' :
+                    role.name === 'Manager' ? 'text-blue-400' : 'text-slate-300'
                   } size={20} />
-                  <h3 className="text-lg font-bold text-gray-900">{role.name}</h3>
-                  {role.isSystem && <span className="text-[10px] uppercase font-bold tracking-wider text-gray-500 bg-gray-200 px-2 py-0.5 rounded-full ml-2">System</span>}
+                  <h3 className="text-lg font-bold text-slate-100">{role.name}</h3>
+                  {role.isSystem && <span className="text-[10px] uppercase font-bold tracking-wider text-surface-400 bg-surface-700 border border-surface-600 px-2 py-0.5 rounded-full ml-2">System</span>}
                 </div>
-                <p className="text-sm text-gray-600 mt-1">{role.description}</p>
+                <p className="text-sm text-surface-400 mt-1">{role.description}</p>
               </div>
               <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Link to={`/admin/roles/${role.publicId}/edit`} className="p-1.5 text-brand-600 hover:bg-brand-50 rounded transition-colors">
+                <Link to={`/admin/roles/${role.publicId}/edit`} className="p-1.5 text-brand-400 hover:bg-brand-500/10 rounded-lg transition-colors">
                   <Edit size={16} />
                 </Link>
                 {!role.isSystem && (
-                  <button onClick={() => handleDelete(role.publicId, role.name)} className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors">
+                  <button onClick={() => handleDelete(role.publicId, role.name)} className="p-1.5 text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors">
                     <Trash2 size={16} />
                   </button>
                 )}
@@ -69,15 +69,15 @@ const Roles = () => {
             </div>
             
             <div className="p-4 flex-1">
-              <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Permissions</h4>
+               <h4 className="text-xs font-semibold text-surface-400 uppercase tracking-wider mb-3">Permissions</h4>
               <div className="flex flex-wrap gap-2">
                 {role.permissions.map((perm, idx) => {
                   const [resource, action] = perm.split(':');
                   return (
-                    <span key={idx} className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                    <span key={idx} className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-surface-700/50 text-slate-300 border border-surface-600/50">
                       <span className="capitalize">{resource}</span>
-                      <span className="mx-1 text-gray-400">•</span>
-                      <span className="text-brand-600 capitalize">{action}</span>
+                      <span className="mx-1 text-surface-500">•</span>
+                      <span className="text-brand-400 capitalize">{action}</span>
                     </span>
                   );
                 })}
@@ -91,4 +91,3 @@ const Roles = () => {
 };
 
 export default Roles;
-
