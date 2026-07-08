@@ -9,7 +9,7 @@ import Pagination from '../../components/ui/Pagination';
 import { Sale, PaginatedResponse } from '../../types';
 import { formatCurrency, formatDate } from '../../utils/helpers';
 import { Plus, Download, Eye, Edit, Trash2, XCircle } from 'lucide-react';
-import axios from 'axios';
+import apiClient from '../../api/apiClient';
 
 const Sales = () => {
   const { get, patch, del } = useApi();
@@ -63,8 +63,7 @@ const Sales = () => {
       if (searchTerm) params.set('search', searchTerm);
       if (statusFilter) params.set('status', statusFilter);
       const query = params.toString();
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/sales/export${query ? `?${query}` : ''}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      const response = await apiClient.get(`/sales/export${query ? `?${query}` : ''}`, {
         withCredentials: true,
         responseType: 'blob',
       });
@@ -192,3 +191,4 @@ const Sales = () => {
 };
 
 export default Sales;
+
