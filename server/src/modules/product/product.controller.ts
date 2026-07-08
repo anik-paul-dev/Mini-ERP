@@ -33,6 +33,7 @@ class ProductController {
   });
 
   updateProduct = catchAsync(async (req: Request<PublicIdParams>, res: Response) => {
+    const product = await productService.updateProduct(
       req.params.publicId,
       req.body,
       req.user!,

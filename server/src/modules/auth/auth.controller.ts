@@ -97,7 +97,7 @@ class AuthController {
     res.status(200).json(ApiResponse.success({ resetToken }, 'Password reset link sent to email'));
   });
 
-  resetPassword = catchAsync(async (req: Request, res: Response) => {
+  resetPassword = catchAsync(async (req: Request<{ token: string }>, res: Response) => {
     const { token } = req.params;
     const { password } = req.body;
     await authService.resetPassword(token, password);
