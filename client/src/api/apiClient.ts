@@ -1,6 +1,12 @@
 import axios from 'axios';
 
-const API_BASE_URL = '/api/v1';
+const API_PREFIX = '/api/v1';
+const apiOrigin = import.meta.env.VITE_API_URL?.replace(/\/$/, '');
+const API_BASE_URL = apiOrigin
+  ? apiOrigin.endsWith(API_PREFIX)
+    ? apiOrigin
+    : `${apiOrigin}${API_PREFIX}`
+  : API_PREFIX;
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -59,7 +65,7 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError);
-        // Refresh token failed — user has no valid session
+        // Refresh token failed - user has no valid session
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

@@ -18,6 +18,7 @@ interface SocketContextType {
 export const SocketContext = createContext<SocketContextType | undefined>(undefined);
 
 const NOTIFICATIONS_STORAGE_KEY = 'erp_notifications';
+const usePolling = import.meta.env.VITE_USE_POLLING === 'true';
 
 const loadNotifications = (): NotificationItem[] => {
   try {
@@ -39,6 +40,15 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   }, [notifications]);
 
   useEffect(() => {
+    if (usePolling) {
+      if (socket) {
+        socket.disconnect();
+        setSocket(null);
+      }
+      setIsConnected(false);
+      return;
+    }
+
     if (!isAuthenticated) {
       if (socket) {
         socket.disconnect();

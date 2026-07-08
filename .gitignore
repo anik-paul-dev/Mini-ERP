@@ -9,11 +9,14 @@ client/.env.example
 server/.env.example
 *.log
 dist/
+client/dist/
+server/dist/
 build/
 .DS_Store
 Thumbs.db
 .vercel
 implementation_plan.md
+deploy-implementation_plan.md
 requirement.md
 walkthrough.md
 task.md

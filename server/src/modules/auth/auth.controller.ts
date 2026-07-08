@@ -1,8 +1,23 @@
-import { Request, Response } from 'express';
+import { CookieOptions, Request, Response } from 'express';
 import authService from './auth.service';
 import User from './auth.model';
 import catchAsync from '../../utils/catchAsync';
 import ApiResponse from '../../utils/ApiResponse';
+
+const isProduction = process.env.NODE_ENV === 'production';
+
+const authCookieOptions = (maxAge: number): CookieOptions => ({
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? 'none' : 'strict',
+  maxAge,
+});
+
+const clearAuthCookieOptions: CookieOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? 'none' : 'strict',
+};
 
 class AuthController {
   register = catchAsync(async (req: Request, res: Response) => {
@@ -15,19 +30,8 @@ class AuthController {
     const { user, accessToken, refreshToken } = await authService.login(email, password);
 
     // Set cookies
-    res.cookie('accessToken', accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 15 * 60 * 1000, // 15 mins
-    });
-
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    });
+    res.cookie('accessToken', accessToken, authCookieOptions(15 * 60 * 1000)); // 15 mins
+    res.cookie('refreshToken', refreshToken, authCookieOptions(7 * 24 * 60 * 60 * 1000)); // 7 days
 
     res.status(200).json(ApiResponse.success({ user, accessToken, refreshToken }, 'Logged in successfully'));
   });
@@ -41,19 +45,8 @@ class AuthController {
     const { accessToken, refreshToken } = await authService.refreshAuthToken(token);
 
     // Set new cookies
-    res.cookie('accessToken', accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 15 * 60 * 1000,
-    });
-
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    res.cookie('accessToken', accessToken, authCookieOptions(15 * 60 * 1000));
+    res.cookie('refreshToken', refreshToken, authCookieOptions(7 * 24 * 60 * 60 * 1000));
 
     res.status(200).json(ApiResponse.success({ accessToken }, 'Token refreshed'));
   });
@@ -63,8 +56,8 @@ class AuthController {
       await authService.logout(req.user.userId);
     }
 
-    res.clearCookie('accessToken');
-    res.clearCookie('refreshToken');
+    res.clearCookie('accessToken', clearAuthCookieOptions);
+    res.clearCookie('refreshToken', clearAuthCookieOptions);
 
     res.status(200).json(ApiResponse.success(null, 'Logged out successfully'));
   });

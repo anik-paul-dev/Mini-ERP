@@ -4,6 +4,11 @@ import { verifyAccessToken } from '../utils/tokenUtils';
 
 let io: Server;
 
+const noopIO = {
+  emit: () => true,
+  to: () => noopIO,
+} as unknown as Server;
+
 const parseCookies = (cookieHeader?: string): Record<string, string> => {
   if (!cookieHeader) return {};
 
@@ -16,10 +21,19 @@ const parseCookies = (cookieHeader?: string): Record<string, string> => {
   }, {});
 };
 
+const getSocketOrigins = () => (process.env.CLIENT_URL || 'http://localhost:5173')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 const initSocket = (httpServer: HttpServer): Server => {
+  if (process.env.VERCEL) {
+    return noopIO;
+  }
+
   io = new Server(httpServer, {
     cors: {
-      origin: process.env.CLIENT_URL || 'http://localhost:5173',
+      origin: getSocketOrigins(),
       methods: ['GET', 'POST'],
       credentials: true,
     },
@@ -65,8 +79,7 @@ const initSocket = (httpServer: HttpServer): Server => {
 };
 
 const getIO = (): Server => {
-  if (!io) throw new Error('Socket.IO not initialized');
-  return io;
+  return io || noopIO;
 };
 
 export { initSocket, getIO };

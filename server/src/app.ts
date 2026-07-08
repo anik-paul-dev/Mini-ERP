@@ -27,20 +27,27 @@ import activityRoutes from './modules/activity/activity.routes';
 dotenv.config();
 
 const app: Express = express();
-const server = http.createServer(app);
+const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 // Connect to databases & external services
 connectDB();
 connectCloudinary();
 connectRedis();
 
-// Init Socket.IO
-initSocket(server);
-
 // Middleware
 app.use(helmet()); // Security HTTP headers
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error(`Origin ${origin} is not allowed by CORS`));
+  },
   credentials: true,
 }));
 app.use(express.json());
@@ -75,8 +82,13 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-server.listen(PORT, () => {
-  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
-});
+if (!process.env.VERCEL) {
+  const server = http.createServer(app);
+  initSocket(server);
+
+  server.listen(PORT, () => {
+    console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  });
+}
 
 export default app;

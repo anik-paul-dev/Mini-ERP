@@ -7,11 +7,16 @@ import './index.css';
 import { AuthProvider } from './context/AuthContext';
 import { SocketProvider } from './context/SocketContext';
 
+const usePolling = import.meta.env.VITE_USE_POLLING === 'true';
+const pollingInterval = Number(import.meta.env.VITE_POLLING_INTERVAL_MS || 4000);
+
 // Create a client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,
+      refetchInterval: usePolling ? pollingInterval : false,
+      refetchIntervalInBackground: usePolling,
       retry: 1,
       staleTime: 5 * 60 * 1000, // 5 minutes
     },

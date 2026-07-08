@@ -10,6 +10,9 @@ interface ChatWidgetProps {
   onClose: () => void;
 }
 
+const usePolling = import.meta.env.VITE_USE_POLLING === 'true';
+const pollingInterval = Number(import.meta.env.VITE_POLLING_INTERVAL_MS || 4000);
+
 const ChatWidget: React.FC<ChatWidgetProps> = ({ onClose }) => {
   const { user } = useAuth();
   const { socket, isConnected } = useSocket();
@@ -55,7 +58,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ onClose }) => {
         setMessages((prev) => (prev.some((item) => item.publicId === msg.publicId) ? prev : [...prev, msg]));
       }
 
-      fetchContacts();
+      fetchContacts(false);
     };
 
     socket.on('chat:receive', handleReceive);
@@ -66,31 +69,44 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ onClose }) => {
   }, [socket, activeContact?.publicId]);
 
   useEffect(() => {
+    if (!usePolling && isConnected) return;
+
+    const interval = window.setInterval(() => {
+      fetchContacts(false);
+      if (activeContact) {
+        fetchMessages(activeContact.publicId, false);
+      }
+    }, pollingInterval);
+
+    return () => window.clearInterval(interval);
+  }, [isConnected, activeContact?.publicId]);
+
+  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const fetchContacts = async () => {
-    setContactsLoading(true);
+  const fetchContacts = async (showLoading = true) => {
+    if (showLoading) setContactsLoading(true);
     try {
       const data = await get<ChatContact[]>('/chat/contacts', { showErrorToast: false });
       if (data) setContacts(data);
     } catch (error) {
       console.error('Failed to fetch contacts', error);
     } finally {
-      setContactsLoading(false);
+      if (showLoading) setContactsLoading(false);
     }
   };
 
-  const fetchMessages = async (contactPublicId: string) => {
-    setMessagesLoading(true);
+  const fetchMessages = async (contactPublicId: string, showLoading = true) => {
+    if (showLoading) setMessagesLoading(true);
     try {
       const data = await get<ChatMessage[]>(`/chat/${contactPublicId}`, { showErrorToast: false });
       setMessages(data || []);
-      fetchContacts();
+      fetchContacts(false);
     } catch (error) {
       console.error('Failed to fetch messages', error);
     } finally {
-      setMessagesLoading(false);
+      if (showLoading) setMessagesLoading(false);
     }
   };
 
@@ -113,7 +129,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ onClose }) => {
       if (msg) {
         setMessages((prev) => [...prev, msg]);
         setNewMessage('');
-        fetchContacts();
+        fetchContacts(false);
       }
     } catch (error) {
       console.error('Failed to send message', error);
@@ -145,7 +161,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ onClose }) => {
             <h3 className="font-semibold truncate">{activeContact ? activeContact.name : 'Messages'}</h3>
             <p className="text-xs text-white/80 flex items-center gap-1">
               <span className={`inline-block w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-emerald-300' : 'bg-red-300'}`}></span>
-              {isConnected ? 'Connected' : 'Offline'}
+              {isConnected ? 'Connected' : usePolling ? 'Polling' : 'Offline'}
             </p>
           </div>
         </div>
