@@ -7,7 +7,7 @@ import ApiError from '../utils/ApiError';
 declare global {
   namespace Express {
     interface Request {
-      user?: TokenPayload & { _id?: string };
+      user?: TokenPayload & { _id?: string; name?: string };
     }
   }
 }
@@ -26,8 +26,7 @@ const auth = async (req: Request, _res: Response, next: NextFunction): Promise<v
 
     const decoded = verifyAccessToken(token);
 
-    // Check if user is still active
-    const user = await User.findOne({ publicId: decoded.publicId }).select('isActive _id publicId').lean();
+    const user = await User.findOne({ publicId: decoded.publicId }).select('isActive _id publicId name').lean();
     if (!user) {
       throw ApiError.unauthorized('User not found');
     }
@@ -35,7 +34,7 @@ const auth = async (req: Request, _res: Response, next: NextFunction): Promise<v
       throw ApiError.forbidden('Account has been deactivated');
     }
 
-    req.user = { ...decoded, _id: user._id.toString() };
+    req.user = { ...decoded, _id: user._id.toString(), name: user.name };
     next();
   } catch (error: any) {
     if (error instanceof ApiError) {

@@ -27,18 +27,18 @@ class CustomerController {
   });
 
   createCustomer = catchAsync(async (req: Request, res: Response) => {
-    const customer = await customerService.createCustomer(req.body, req.user!._id!);
+    const customer = await customerService.createCustomer(req.body, req.user!);
     await dashboardService.invalidateCache();
     res.status(201).json(ApiResponse.created(customer, 'Customer created successfully'));
   });
 
   updateCustomer = catchAsync(async (req: Request<PublicIdParams>, res: Response) => {
-    const customer = await customerService.updateCustomer(req.params.publicId, req.body);
+    const customer = await customerService.updateCustomer(req.params.publicId, req.body, req.user!);
     res.status(200).json(ApiResponse.success(customer, 'Customer updated successfully'));
   });
 
   deleteCustomer = catchAsync(async (req: Request<PublicIdParams>, res: Response) => {
-    await customerService.deleteCustomer(req.params.publicId);
+    await customerService.deleteCustomer(req.params.publicId, req.user!);
     await dashboardService.invalidateCache();
     res.status(200).json(ApiResponse.success(null, 'Customer deleted successfully'));
   });

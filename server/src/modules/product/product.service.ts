@@ -4,6 +4,7 @@ import ApiError from '../../utils/ApiError';
 import QueryBuilder from '../../utils/QueryBuilder';
 import { cloudinary } from '../../config/cloudinary';
 import { getIO } from '../../config/socket';
+import activityService from '../activity/activity.service';
 
 class ProductService {
   async getAllProducts(query: any) {
@@ -27,7 +28,7 @@ class ProductService {
     return product;
   }
 
-  async createProduct(data: any, file: Express.Multer.File, userId: string) {
+  async createProduct(data: any, file: Express.Multer.File, user: { _id?: string, name?: string }) {
     if (!file) {
       throw ApiError.badRequest('Product image is required');
     }
@@ -54,14 +55,25 @@ class ProductService {
       ...data,
       image: imageInfo.url,
       imagePublicId: imageInfo.public_id,
-      createdBy: new mongoose.Types.ObjectId(userId),
+      createdBy: new mongoose.Types.ObjectId(user._id),
     });
 
     await product.save();
+
+    await activityService.logActivity({
+      action: 'create',
+      entityType: 'product',
+      entityId: product.publicId,
+      entityName: product.name,
+      performedBy: new mongoose.Types.ObjectId(user._id),
+      performerName: user.name || 'Unknown',
+      details: `Created product ${product.name} (SKU: ${product.sku})`,
+    });
+
     return product;
   }
 
-  async updateProduct(publicId: string, data: any, file?: Express.Multer.File) {
+  async updateProduct(publicId: string, data: any, user: { _id?: string, name?: string }, file?: Express.Multer.File) {
     const product = await Product.findOne({ publicId });
     if (!product) {
       throw ApiError.notFound('Product not found');
@@ -110,10 +122,22 @@ class ProductService {
       });
     }
 
+    if (updatedProduct) {
+      await activityService.logActivity({
+        action: 'update',
+        entityType: 'product',
+        entityId: updatedProduct.publicId,
+        entityName: updatedProduct.name,
+        performedBy: new mongoose.Types.ObjectId(user._id),
+        performerName: user.name || 'Unknown',
+        details: `Updated product ${updatedProduct.name}`,
+      });
+    }
+
     return updatedProduct;
   }
 
-  async deleteProduct(publicId: string) {
+  async deleteProduct(publicId: string, user: { _id?: string, name?: string }) {
     const product = await Product.findOne({ publicId });
     if (!product) {
       throw ApiError.notFound('Product not found');
@@ -128,6 +152,16 @@ class ProductService {
     }
 
     await Product.findOneAndDelete({ publicId });
+
+    await activityService.logActivity({
+      action: 'delete',
+      entityType: 'product',
+      entityId: product.publicId,
+      entityName: product.name,
+      performedBy: new mongoose.Types.ObjectId(user._id),
+      performerName: user.name || 'Unknown',
+      details: `Deleted product ${product.name} (SKU: ${product.sku})`,
+    });
   }
 }
 

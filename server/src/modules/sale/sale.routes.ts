@@ -10,6 +10,7 @@ const router = express.Router();
 router.use(auth);
 
 router.get('/', authorize('sales:read'), saleController.getAllSales);
+router.get('/export', authorize('sales:export'), saleController.exportSales);
 router.get('/:publicId', authorize('sales:read'), saleController.getSale);
 router.post('/', authorize('sales:create'), validate(createSaleSchema), saleController.createSale);
 

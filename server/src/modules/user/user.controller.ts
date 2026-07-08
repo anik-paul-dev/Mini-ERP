@@ -26,17 +26,17 @@ class UserController {
   });
 
   createUser = catchAsync(async (req: Request, res: Response) => {
-    const user = await userService.createUser(req.body);
+    const user = await userService.createUser(req.body, req.user!);
     res.status(201).json(ApiResponse.created(user, 'User created successfully'));
   });
 
   updateUser = catchAsync(async (req: Request<PublicIdParams>, res: Response) => {
-    const user = await userService.updateUser(req.params.publicId, req.body);
+    const user = await userService.updateUser(req.params.publicId, req.body, req.user!);
     res.status(200).json(ApiResponse.success(user, 'User updated successfully'));
   });
 
   deleteUser = catchAsync(async (req: Request<PublicIdParams>, res: Response) => {
-    await userService.deleteUser(req.params.publicId);
+    await userService.deleteUser(req.params.publicId, req.user!);
     res.status(200).json(ApiResponse.success(null, 'User deleted successfully'));
   });
 }

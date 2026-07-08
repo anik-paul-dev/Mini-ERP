@@ -89,6 +89,32 @@ class AuthController {
 
     res.status(200).json(ApiResponse.success(userData, 'Current user'));
   });
+
+  forgotPassword = catchAsync(async (req: Request, res: Response) => {
+    const { email } = req.body;
+    const resetToken = await authService.forgotPassword(email);
+    // Return resetToken in development for testing purposes (since we don't have real email service here)
+    res.status(200).json(ApiResponse.success({ resetToken }, 'Password reset link sent to email'));
+  });
+
+  resetPassword = catchAsync(async (req: Request, res: Response) => {
+    const { token } = req.params;
+    const { password } = req.body;
+    await authService.resetPassword(token, password);
+    res.status(200).json(ApiResponse.success(null, 'Password has been reset successfully'));
+  });
+
+  changePassword = catchAsync(async (req: Request, res: Response) => {
+    const { currentPassword, newPassword } = req.body;
+    await authService.changePassword(req.user!._id!, currentPassword, newPassword);
+    res.status(200).json(ApiResponse.success(null, 'Password changed successfully'));
+  });
+
+  updateProfile = catchAsync(async (req: Request, res: Response) => {
+    const { name } = req.body;
+    const updatedUser = await authService.updateProfile(req.user!._id!, { name });
+    res.status(200).json(ApiResponse.success(updatedUser, 'Profile updated successfully'));
+  });
 }
 
 export default new AuthController();

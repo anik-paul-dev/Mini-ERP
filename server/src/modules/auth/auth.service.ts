@@ -128,6 +128,70 @@ class AuthService {
   async logout(userId: string) {
     await User.findByIdAndUpdate(userId, { refreshToken: '' }, { new: true, runValidators: false });
   }
+
+  async forgotPassword(email: string) {
+    const user = await User.findOne({ email });
+    if (!user) {
+      throw ApiError.notFound('User not found with this email');
+    }
+
+    const { resetToken, hashedToken, expires } = generatePasswordResetToken();
+
+    user.passwordResetToken = hashedToken;
+    user.passwordResetExpires = expires;
+    await user.save({ validateBeforeSave: false });
+
+    // In a real app, send email here with the raw resetToken.
+    // For this assessment, we'll return the raw token.
+    return resetToken;
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    const hashedToken = hashToken(token);
+
+    const user = await User.findOne({
+      passwordResetToken: hashedToken,
+      passwordResetExpires: { $gt: new Date() },
+    }).select('+password +passwordResetToken +passwordResetExpires');
+
+    if (!user) {
+      throw ApiError.badRequest('Token is invalid or has expired');
+    }
+
+    user.password = newPassword;
+    user.passwordResetToken = '';
+    user.passwordResetExpires = new Date(0); // clear expiry
+    await user.save();
+
+    return user;
+  }
+
+  async changePassword(userId: string, currentPassword: string, newPassword: string) {
+    const user = await User.findById(userId).select('+password');
+    if (!user) {
+      throw ApiError.notFound('User not found');
+    }
+
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) {
+      throw ApiError.badRequest('Current password is incorrect');
+    }
+
+    user.password = newPassword;
+    await user.save();
+  }
+
+  async updateProfile(userId: string, data: { name: string }) {
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { name: data.name },
+      { new: true, runValidators: true }
+    );
+    if (!user) {
+      throw ApiError.notFound('User not found');
+    }
+    return user;
+  }
 }
 
 export default new AuthService();

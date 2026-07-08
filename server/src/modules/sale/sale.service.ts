@@ -5,6 +5,7 @@ import Customer from '../customer/customer.model';
 import ApiError from '../../utils/ApiError';
 import QueryBuilder from '../../utils/QueryBuilder';
 import { getIO } from '../../config/socket';
+import activityService from '../activity/activity.service';
 
 class SaleService {
   async getAllSales(query: any) {
@@ -107,6 +108,16 @@ class SaleService {
         }
       }
 
+      await activityService.logActivity({
+        action: 'create',
+        entityType: 'sale',
+        entityId: sale.publicId,
+        entityName: `Sale for ${sale.customerName}`,
+        performedBy: new mongoose.Types.ObjectId(user._id),
+        performerName: user.name || 'Unknown',
+        details: `Created sale with ${sale.items.length} items for ${sale.customerName}. Grand Total: $${sale.grandTotal}`,
+      });
+
       return sale;
     } catch (error) {
       await session.abortTransaction();
@@ -114,6 +125,31 @@ class SaleService {
     } finally {
       session.endSession();
     }
+  }
+
+  async exportSalesCSV(query: any) {
+    const saleQuery = new QueryBuilder(Sale.find().lean(), query)
+      .search(['customerName', 'publicId'])
+      .filter()
+      .sort();
+
+    // Do not paginate, get all matching results
+    const sales = await saleQuery.query;
+
+    if (!sales || sales.length === 0) {
+      return '';
+    }
+
+    // Generate CSV
+    let csv = 'Sale ID,Customer,Total Items,Grand Total,Created By,Date\n';
+    
+    for (const sale of sales) {
+      const date = sale.createdAt ? new Date(sale.createdAt).toISOString() : '';
+      const itemsCount = sale.items?.length || 0;
+      csv += `${sale.publicId},"${sale.customerName}",${itemsCount},${sale.grandTotal},"${sale.createdByName}",${date}\n`;
+    }
+
+    return csv;
   }
 }
 

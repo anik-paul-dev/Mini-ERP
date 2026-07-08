@@ -24,15 +24,15 @@ const seed = async () => {
         permissions: [
           'products:create', 'products:read', 'products:update', 'products:delete',
           'customers:create', 'customers:read', 'customers:update', 'customers:delete',
-          'sales:create', 'sales:read',
-          'dashboard:read'
+          'sales:create', 'sales:read', 'sales:export',
+          'dashboard:read', 'activities:read'
         ],
         description: 'Can manage products, customers and sales',
         isSystem: true,
       },
       {
         name: 'Employee',
-        permissions: ['products:read', 'customers:read', 'sales:create', 'sales:read', 'dashboard:read'],
+        permissions: ['products:read', 'customers:read', 'sales:create', 'sales:read', 'sales:export', 'dashboard:read'],
         description: 'Can view products and create sales',
         isSystem: true,
       }

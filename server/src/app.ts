@@ -21,6 +21,7 @@ import customerRoutes from './modules/customer/customer.routes';
 import saleRoutes from './modules/sale/sale.routes';
 import dashboardRoutes from './modules/dashboard/dashboard.routes';
 import chatRoutes from './modules/chat/chat.routes';
+import activityRoutes from './modules/activity/activity.routes';
 
 // Load env vars
 dotenv.config();
@@ -57,6 +58,7 @@ app.use(`${API_PREFIX}/customers`, customerRoutes);
 app.use(`${API_PREFIX}/sales`, saleRoutes);
 app.use(`${API_PREFIX}/dashboard`, dashboardRoutes);
 app.use(`${API_PREFIX}/chat`, chatRoutes);
+app.use(`${API_PREFIX}/activities`, activityRoutes);
 
 // Health check
 app.get('/health', (_req: Request, res: Response) => {

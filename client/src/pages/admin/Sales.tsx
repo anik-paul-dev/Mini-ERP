@@ -7,7 +7,8 @@ import SearchBar from '../../components/ui/SearchBar';
 import Pagination from '../../components/ui/Pagination';
 import { Sale, PaginatedResponse } from '../../types';
 import { formatCurrency, formatDate } from '../../utils/helpers';
-import { Plus } from 'lucide-react';
+import { Plus, Download, Eye } from 'lucide-react';
+import axios from 'axios';
 
 const Sales = () => {
   const { get } = useApi();
@@ -22,6 +23,29 @@ const Sales = () => {
     queryKey: ['adminSales', page, searchTerm],
     queryFn: fetchSales,
   });
+
+  const handleExport = async () => {
+    try {
+      const token = localStorage.getItem('accessToken'); // Assuming token is here or handled by cookies
+      // Note: In our setup, auth token is in cookie or Authorization header. 
+      // We will use the same axios instance or standard fetch to get the blob
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/sales/export${searchTerm ? `?search=${searchTerm}` : ''}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        withCredentials: true,
+        responseType: 'blob',
+      });
+      
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'sales_export.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Export failed', error);
+    }
+  };
 
   const columns = [
     { 
@@ -45,6 +69,21 @@ const Sales = () => {
       header: 'Date', 
       accessor: 'createdAt',
       cell: (item: Sale) => formatDate(item.createdAt)
+    },
+    {
+      header: 'Actions',
+      accessor: 'actions',
+      cell: (item: Sale) => (
+        <div className="flex space-x-2">
+          <Link
+            to={`/admin/sales/${item.publicId}`}
+            className="p-1 text-gray-500 hover:text-brand-600 transition-colors"
+            title="View Invoice"
+          >
+            <Eye size={18} />
+          </Link>
+        </div>
+      )
     }
   ];
 
@@ -52,10 +91,16 @@ const Sales = () => {
     <div className="space-y-6 animate-in fade-in">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-2xl font-bold text-gray-900">Sales</h1>
-        <Link to="/admin/sales/new" className="btn-primary">
-          <Plus size={18} className="mr-2" />
-          New Sale
-        </Link>
+        <div className="flex space-x-3">
+          <button onClick={handleExport} className="btn-secondary flex items-center">
+            <Download size={18} className="mr-2" />
+            Export CSV
+          </button>
+          <Link to="/admin/sales/new" className="btn-primary">
+            <Plus size={18} className="mr-2" />
+            New Sale
+          </Link>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">

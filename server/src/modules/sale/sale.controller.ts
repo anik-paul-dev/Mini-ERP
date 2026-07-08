@@ -27,12 +27,20 @@ class SaleController {
   });
 
   createSale = catchAsync(async (req: Request, res: Response) => {
-    const user = { _id: req.user!._id, name: (req.user as any).name || 'Unknown' };
+    const user = { _id: req.user!._id, name: req.user!.name || 'Unknown' };
     const sale = await saleService.createSale(req.body, user);
     
     await dashboardService.invalidateCache();
     
     res.status(201).json(ApiResponse.created(sale, 'Sale created successfully'));
+  });
+
+  exportSales = catchAsync(async (req: Request, res: Response) => {
+    const csv = await saleService.exportSalesCSV(req.query);
+    
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename=sales_export.csv');
+    res.status(200).send(csv);
   });
 }
 

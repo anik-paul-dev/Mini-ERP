@@ -5,6 +5,7 @@ import auth from '../../middleware/auth';
 import { authorize } from '../../middleware/authorize';
 import { createProductSchema, updateProductSchema } from './product.validation';
 import upload from '../../middleware/upload';
+import { uploadLimiter } from '../../middleware/rateLimiter';
 
 const router = express.Router();
 
@@ -12,8 +13,8 @@ router.use(auth);
 
 router.get('/', authorize('products:read'), productController.getAllProducts);
 router.get('/:publicId', authorize('products:read'), productController.getProduct);
-router.post('/', authorize('products:create'), upload.single('image'), validate(createProductSchema), productController.createProduct);
-router.put('/:publicId', authorize('products:update'), upload.single('image'), validate(updateProductSchema), productController.updateProduct);
+router.post('/', authorize('products:create'), uploadLimiter, upload.single('image'), validate(createProductSchema), productController.createProduct);
+router.put('/:publicId', authorize('products:update'), uploadLimiter, upload.single('image'), validate(updateProductSchema), productController.updateProduct);
 router.delete('/:publicId', authorize('products:delete'), productController.deleteProduct);
 
 export default router;

@@ -14,6 +14,10 @@ import Login from './pages/public/Login';
 import ForgotPassword from './pages/public/ForgotPassword';
 import ResetPassword from './pages/public/ResetPassword';
 
+// Shared Pages
+import Profile from './pages/shared/Profile';
+import SaleDetail from './pages/shared/SaleDetail';
+
 // Admin Pages
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminProducts from './pages/admin/Products';
@@ -26,6 +30,7 @@ import AdminUsers from './pages/admin/Users';
 import AdminUserForm from './pages/admin/UserForm';
 import AdminRoles from './pages/admin/Roles';
 import AdminRoleForm from './pages/admin/RoleForm';
+import AdminActivityLog from './pages/admin/ActivityLog';
 
 // Manager Pages
 import ManagerDashboard from './pages/manager/Dashboard';
@@ -81,6 +86,9 @@ function App() {
               <Route path="/admin/roles" element={<AdminRoles />} />
               <Route path="/admin/roles/new" element={<AdminRoleForm />} />
               <Route path="/admin/roles/:id/edit" element={<AdminRoleForm />} />
+              <Route path="/admin/activities" element={<AdminActivityLog />} />
+              <Route path="/admin/profile" element={<Profile />} />
+              <Route path="/admin/sales/:id" element={<SaleDetail />} />
             </Route>
           </Route>
 
@@ -96,6 +104,8 @@ function App() {
               <Route path="/manager/customers/:id/edit" element={<ManagerCustomerForm />} />
               <Route path="/manager/sales" element={<ManagerSales />} />
               <Route path="/manager/sales/new" element={<ManagerSaleForm />} />
+              <Route path="/manager/sales/:id" element={<SaleDetail />} />
+              <Route path="/manager/profile" element={<Profile />} />
             </Route>
           </Route>
 
@@ -106,6 +116,8 @@ function App() {
               <Route path="/employee/products" element={<EmployeeProducts />} />
               <Route path="/employee/sales" element={<EmployeeSales />} />
               <Route path="/employee/sales/new" element={<EmployeeSaleForm />} />
+              <Route path="/employee/sales/:id" element={<SaleDetail />} />
+              <Route path="/employee/profile" element={<Profile />} />
             </Route>
           </Route>
 

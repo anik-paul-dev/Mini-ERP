@@ -46,3 +46,9 @@ export const changePasswordSchema = z.object({
       .max(128, 'Password too long'),
   }),
 });
+
+export const updateProfileSchema = z.object({
+  body: z.object({
+    name: z.string().min(2, 'Name must be at least 2 characters').max(100),
+  }),
+});

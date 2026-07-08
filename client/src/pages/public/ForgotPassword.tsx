@@ -26,9 +26,13 @@ const ForgotPassword = () => {
 
   const onSubmit = async (_data: ForgotPasswordFormValues) => {
     try {
-      // In a real app, this endpoint would exist. Mocking success for now.
-      // await post('/auth/forgot-password', data);
-      setIsSuccess(true);
+      const response = await post<{ resetToken: string }>('/auth/forgot-password', _data);
+      if (response && response.resetToken) {
+        // In a real app with email, you wouldn't log this.
+        // For this demo, we'll log it to console so it can be tested manually.
+        console.log('Reset token (for testing without email):', response.resetToken);
+        setIsSuccess(true);
+      }
     } catch (error) {
       // Error handled by useApi
     }

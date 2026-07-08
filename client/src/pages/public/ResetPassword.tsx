@@ -1,7 +1,8 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useApi } from '../../hooks/useApi';
 import PasswordStrength from '../../components/ui/PasswordStrength';
 
 const resetPasswordSchema = z.object({
@@ -16,7 +17,8 @@ type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 
 const ResetPassword = () => {
   const navigate = useNavigate();
-  const loading = false;
+  const { token } = useParams<{ token: string }>();
+  const { post, loading } = useApi();
 
   const {
     register,
@@ -29,10 +31,10 @@ const ResetPassword = () => {
 
   const passwordValue = watch('password');
 
-  const onSubmit = async (_data: ResetPasswordFormValues) => {
+  const onSubmit = async (data: ResetPasswordFormValues) => {
     try {
-      // In a real app, this endpoint would exist.
-      // await post(`/auth/reset-password/${token}`, { password: data.password }, { showSuccessToast: true });
+      if (!token) return;
+      await post(`/auth/reset-password/${token}`, { password: data.password }, { showSuccessToast: true });
       navigate('/login');
     } catch (error) {
       // Error handled by useApi

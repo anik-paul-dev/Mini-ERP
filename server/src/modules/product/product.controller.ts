@@ -27,15 +27,15 @@ class ProductController {
   });
 
   createProduct = catchAsync(async (req: Request, res: Response) => {
-    const product = await productService.createProduct(req.body, req.file as Express.Multer.File, req.user!._id!);
+    const product = await productService.createProduct(req.body, req.file as Express.Multer.File, req.user!);
     await dashboardService.invalidateCache();
     res.status(201).json(ApiResponse.created(product, 'Product created successfully'));
   });
 
   updateProduct = catchAsync(async (req: Request<PublicIdParams>, res: Response) => {
-    const product = await productService.updateProduct(
       req.params.publicId,
       req.body,
+      req.user!,
       req.file as Express.Multer.File
     );
     await dashboardService.invalidateCache();
@@ -43,7 +43,7 @@ class ProductController {
   });
 
   deleteProduct = catchAsync(async (req: Request<PublicIdParams>, res: Response) => {
-    await productService.deleteProduct(req.params.publicId);
+    await productService.deleteProduct(req.params.publicId, req.user!);
     await dashboardService.invalidateCache();
     res.status(200).json(ApiResponse.success(null, 'Product deleted successfully'));
   });

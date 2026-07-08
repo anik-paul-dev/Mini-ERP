@@ -7,6 +7,8 @@ import {
   ShoppingCart, 
   UserCog,
   Shield,
+  Activity,
+  User,
   LogOut
 } from 'lucide-react';
 
@@ -59,6 +61,18 @@ const Sidebar = () => {
       icon: <Shield size={20} />,
       path: `/${rolePath}/roles`,
       roles: ['Admin']
+    },
+    {
+      title: 'Activity Log',
+      icon: <Activity size={20} />,
+      path: `/${rolePath}/activities`,
+      roles: ['Admin']
+    },
+    {
+      title: 'Profile',
+      icon: <User size={20} />,
+      path: `/${rolePath}/profile`,
+      roles: ['Admin', 'Manager', 'Employee']
     }
   ];
 
