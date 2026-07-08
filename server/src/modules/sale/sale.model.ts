@@ -17,6 +17,10 @@ export interface ISale extends Document {
   customerName: string;
   items: ISaleItem[];
   grandTotal: number;
+  status: 'active' | 'canceled';
+  canceledAt?: Date;
+  canceledBy?: mongoose.Types.ObjectId;
+  canceledByName?: string;
   createdBy: mongoose.Types.ObjectId;
   createdByName: string;
   createdAt: Date;
@@ -79,6 +83,18 @@ const saleSchema = new Schema<ISale>(
       required: true,
       min: 0,
     },
+    status: {
+      type: String,
+      enum: ['active', 'canceled'],
+      default: 'active',
+      index: true,
+    },
+    canceledAt: Date,
+    canceledBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
+    canceledByName: String,
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: 'User',
@@ -94,6 +110,7 @@ const saleSchema = new Schema<ISale>(
         delete (ret as any).__v;
         delete (ret as any).customer;
         delete (ret as any).createdBy;
+        delete (ret as any).canceledBy;
         ret.items?.forEach((item: any) => {
           delete item.product;
         });
@@ -105,3 +122,4 @@ const saleSchema = new Schema<ISale>(
 
 const Sale = mongoose.model<ISale>('Sale', saleSchema);
 export default Sale;
+

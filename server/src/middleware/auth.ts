@@ -26,7 +26,10 @@ const auth = async (req: Request, _res: Response, next: NextFunction): Promise<v
 
     const decoded = verifyAccessToken(token);
 
-    const user = await User.findOne({ publicId: decoded.publicId }).select('isActive _id publicId name').lean();
+    const user = await User.findOne({ publicId: decoded.publicId })
+      .select('isActive _id publicId name roleName role')
+      .populate('role', 'permissions name')
+      .lean();
     if (!user) {
       throw ApiError.unauthorized('User not found');
     }
@@ -34,7 +37,14 @@ const auth = async (req: Request, _res: Response, next: NextFunction): Promise<v
       throw ApiError.forbidden('Account has been deactivated');
     }
 
-    req.user = { ...decoded, _id: user._id.toString(), name: user.name };
+    const role = user.role as any;
+    req.user = {
+      ...decoded,
+      role: user.roleName,
+      permissions: role?.permissions || [],
+      _id: user._id.toString(),
+      name: user.name,
+    };
     next();
   } catch (error: any) {
     if (error instanceof ApiError) {

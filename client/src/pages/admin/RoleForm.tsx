@@ -11,7 +11,7 @@ import toast from 'react-hot-toast';
 const PERMISSION_GROUPS = {
   Products: ['products:create', 'products:read', 'products:update', 'products:delete'],
   Customers: ['customers:create', 'customers:read', 'customers:update', 'customers:delete'],
-  Sales: ['sales:create', 'sales:read'],
+  Sales: ['sales:create', 'sales:read', 'sales:update', 'sales:cancel', 'sales:delete', 'sales:export'],
   Users: ['users:create', 'users:read', 'users:update', 'users:delete'],
   Roles: ['roles:create', 'roles:read', 'roles:update', 'roles:delete'],
   Dashboard: ['dashboard:read'],
@@ -185,4 +185,5 @@ const RoleForm = () => {
 };
 
 export default RoleForm;
+
 

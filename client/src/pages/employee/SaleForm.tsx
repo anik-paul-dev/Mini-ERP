@@ -4,9 +4,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useApi } from '../../hooks/useApi';
 import { useAuth } from '../../hooks/useAuth';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useParams } from 'react-router-dom';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
-import { Customer, Product, PaginatedResponse } from '../../types';
+import { Customer, Product, PaginatedResponse, Sale } from '../../types';
 
 const saleSchema = z.object({
   customerPublicId: z.string().min(1, 'Please select a customer'),
@@ -20,16 +20,21 @@ type SaleFormValues = z.infer<typeof saleSchema>;
 
 const SaleForm = () => {
   const navigate = useNavigate();
-  const { get, post, loading } = useApi();
-  
+  const { id } = useParams<{ id: string }>();
+  const isEditMode = !!id;
+  const { get, post, put, loading } = useApi();
+  const { hasPermission } = useAuth();
+
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [fetchingSale, setFetchingSale] = useState(isEditMode);
 
   const {
     register,
     control,
     handleSubmit,
     watch,
+    reset,
     formState: { errors },
   } = useForm<SaleFormValues>({
     resolver: zodResolver(saleSchema),
@@ -45,31 +50,43 @@ const SaleForm = () => {
 
   const watchItems = watch('items');
 
-  const { hasPermission } = useAuth();
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const customersPromise = hasPermission('customers:read') 
-          ? get<PaginatedResponse<Customer>>('/customers?limit=100') 
-          : Promise.resolve(null);
-          
-        const productsPromise = hasPermission('products:read') 
-          ? get<PaginatedResponse<Product>>('/products?limit=100') 
+        const customersPromise = hasPermission('customers:read')
+          ? get<PaginatedResponse<Customer>>('/customers?limit=100')
           : Promise.resolve(null);
 
-        const [customersData, productsData] = await Promise.all([customersPromise, productsPromise]);
-        
+        const productsPromise = hasPermission('products:read')
+          ? get<PaginatedResponse<Product>>('/products?limit=100')
+          : Promise.resolve(null);
+
+        const salePromise = isEditMode && id
+          ? get<Sale>(`/sales/${id}`)
+          : Promise.resolve(null);
+
+        const [customersData, productsData, saleData] = await Promise.all([customersPromise, productsPromise, salePromise]);
+
         if (customersData) setCustomers(customersData.data);
-        if (productsData) setProducts(productsData.data.filter(p => p.stockQuantity > 0)); // Only items in stock
+        if (productsData) setProducts(isEditMode ? productsData.data : productsData.data.filter(p => p.stockQuantity > 0));
+        if (saleData) {
+          reset({
+            customerPublicId: saleData.customerPublicId,
+            items: saleData.items.map(item => ({
+              productPublicId: item.productPublicId,
+              quantity: item.quantity,
+            })),
+          });
+        }
       } catch (error) {
-        // useApi handles the specific error toast, but we can have a fallback if needed
+        navigate('/employee/sales');
+      } finally {
+        setFetchingSale(false);
       }
     };
     fetchData();
-  }, [get, hasPermission]);
+  }, [get, hasPermission, id, isEditMode, navigate, reset]);
 
-  // Calculate grand total dynamically
   const grandTotal = watchItems.reduce((total, item) => {
     if (item.productPublicId) {
       const product = products.find(p => p.publicId === item.productPublicId);
@@ -82,12 +99,20 @@ const SaleForm = () => {
 
   const onSubmit = async (data: SaleFormValues) => {
     try {
-      await post('/sales', data, { showSuccessToast: true, successMessage: 'Sale completed successfully' });
+      if (isEditMode) {
+        await put(`/sales/${id}`, data, { showSuccessToast: true, successMessage: 'Sale updated successfully' });
+      } else {
+        await post('/sales', data, { showSuccessToast: true, successMessage: 'Sale completed successfully' });
+      }
       navigate('/employee/sales');
     } catch (error) {
       // Error handled by useApi
     }
   };
+
+  if (fetchingSale) {
+    return <div className="p-8 text-center">Loading sale details...</div>;
+  }
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in">
@@ -95,13 +120,11 @@ const SaleForm = () => {
         <Link to="/employee/sales" className="text-gray-400 hover:text-gray-600 transition-colors">
           <ArrowLeft size={24} />
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900">Create New Sale</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{isEditMode ? 'Edit Sale' : 'Create New Sale'}</h1>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-          
-          {/* Customer Selection */}
           <div>
             <h3 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2 mb-4">Customer Details</h3>
             <div className="max-w-md">
@@ -116,12 +139,11 @@ const SaleForm = () => {
             </div>
           </div>
 
-          {/* Order Items */}
           <div>
             <div className="flex items-center justify-between border-b border-gray-100 pb-2 mb-4">
               <h3 className="text-lg font-medium text-gray-900">Order Items</h3>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={() => append({ productPublicId: '', quantity: 1 })}
                 className="text-sm font-medium text-brand-600 hover:text-brand-700 flex items-center"
               >
@@ -138,8 +160,8 @@ const SaleForm = () => {
                   <div key={field.id} className="flex items-end gap-4 bg-gray-50 p-4 rounded-lg">
                     <div className="flex-1">
                       <label className="block text-sm font-medium text-gray-700">Product</label>
-                      <select 
-                        {...register(`items.${index}.productPublicId`)} 
+                      <select
+                        {...register(`items.${index}.productPublicId`)}
                         className={`mt-1 input-field ${errors.items?.[index]?.productPublicId ? 'border-red-500' : ''}`}
                       >
                         <option value="">-- Select Product --</option>
@@ -153,15 +175,15 @@ const SaleForm = () => {
                         <p className="mt-1 text-sm text-red-600">{errors.items[index]?.productPublicId?.message}</p>
                       )}
                     </div>
-                    
+
                     <div className="w-32">
                       <label className="block text-sm font-medium text-gray-700">Quantity</label>
-                      <input 
-                        type="number" 
+                      <input
+                        type="number"
                         min="1"
-                        max={selectedProduct?.stockQuantity || 1}
-                        {...register(`items.${index}.quantity`)} 
-                        className={`mt-1 input-field ${errors.items?.[index]?.quantity ? 'border-red-500' : ''}`} 
+                        max={selectedProduct?.stockQuantity || undefined}
+                        {...register(`items.${index}.quantity`)}
+                        className={`mt-1 input-field ${errors.items?.[index]?.quantity ? 'border-red-500' : ''}`}
                       />
                       {errors.items?.[index]?.quantity && (
                         <p className="mt-1 text-sm text-red-600">{errors.items[index]?.quantity?.message}</p>
@@ -175,8 +197,8 @@ const SaleForm = () => {
                       </span>
                     </div>
 
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       onClick={() => remove(index)}
                       className="p-2 text-red-500 hover:text-red-700 mb-1"
                       disabled={fields.length === 1}
@@ -195,11 +217,11 @@ const SaleForm = () => {
               <p className="text-lg font-medium text-gray-900">Grand Total</p>
               <p className="text-3xl font-bold text-brand-600">${grandTotal.toFixed(2)}</p>
             </div>
-            
+
             <div className="flex space-x-3">
               <Link to="/employee/sales" className="btn-outline">Cancel</Link>
               <button type="submit" disabled={loading} className="btn-primary min-w-[150px]">
-                {loading ? 'Processing...' : 'Complete Sale'}
+                {loading ? 'Processing...' : isEditMode ? 'Update Sale' : 'Complete Sale'}
               </button>
             </div>
           </div>

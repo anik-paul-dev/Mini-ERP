@@ -59,6 +59,9 @@ export interface Sale {
   items: SaleItem[];
   grandTotal: number;
   createdByName: string;
+  status: 'active' | 'canceled';
+  canceledAt?: string;
+  canceledByName?: string;
   createdAt: string;
 }
 
@@ -75,9 +78,12 @@ export interface DashboardStats {
   totalCustomers: number;
   totalSalesCount: number;
   totalSalesAmount: number;
+  canceledSalesCount: number;
+  canceledSalesAmount: number;
+  deductedSalesAmount: number;
   lowStockProductsCount: number;
   lowStockProducts: Pick<Product, 'publicId' | 'name' | 'sku' | 'stockQuantity' | 'image'>[];
-  recentSales: Pick<Sale, 'publicId' | 'customerName' | 'grandTotal' | 'createdAt'>[];
+  recentSales: Pick<Sale, 'publicId' | 'customerName' | 'grandTotal' | 'status' | 'createdAt'>[];
 }
 
 export interface ChatMessage {
@@ -108,3 +114,5 @@ export interface NotificationItem {
   read: boolean;
   createdAt: string;
 }
+
+

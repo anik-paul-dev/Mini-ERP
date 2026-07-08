@@ -14,7 +14,7 @@ export function useApi() {
   const [error, setError] = useState<string | null>(null);
 
   const request = useCallback(
-    async <T>(url: string, method: 'GET' | 'POST' | 'PUT' | 'DELETE', data?: any, options: ApiOptions = {}): Promise<T | null> => {
+    async <T>(url: string, method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE', data?: any, options: ApiOptions = {}): Promise<T | null> => {
       setLoading(true);
       setError(null);
 
@@ -59,7 +59,11 @@ export function useApi() {
   const get = useCallback(<T>(url: string, options?: ApiOptions) => request<T>(url, 'GET', undefined, options), [request]);
   const post = useCallback(<T>(url: string, data?: any, options?: ApiOptions) => request<T>(url, 'POST', data, options), [request]);
   const put = useCallback(<T>(url: string, data?: any, options?: ApiOptions) => request<T>(url, 'PUT', data, options), [request]);
+  const patch = useCallback(<T>(url: string, data?: any, options?: ApiOptions) => request<T>(url, 'PATCH', data, options), [request]);
   const del = useCallback(<T>(url: string, options?: ApiOptions) => request<T>(url, 'DELETE', undefined, options), [request]);
 
-  return { loading, error, request, get, post, put, del };
+  return { loading, error, request, get, post, put, patch, del };
 }
+
+
+

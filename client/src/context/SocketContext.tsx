@@ -3,6 +3,7 @@ import { io, Socket } from 'socket.io-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
+import apiClient from '../api/apiClient';
 import { NotificationItem } from '../types';
 
 interface SocketContextType {
@@ -116,7 +117,20 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       queryClient.invalidateQueries({ queryKey: ['adminUsers'] });
     };
 
+    const refreshCurrentUser = async () => {
+      try {
+        await apiClient.get('/auth/me');
+        window.dispatchEvent(new Event('auth:refresh'));
+      } catch {
+        // Existing auth flow will handle expired sessions on the next guarded request.
+      }
+    };
+
     newSocket.on('sale-created', invalidateSaleQueries);
+    newSocket.on('sale-updated', invalidateSaleQueries);
+    newSocket.on('sale-canceled', invalidateSaleQueries);
+    newSocket.on('sale-deleted', invalidateSaleQueries);
+    newSocket.on('sale-changed', invalidateSaleQueries);
     newSocket.on('product-created', invalidateProductQueries);
     newSocket.on('product-updated', invalidateProductQueries);
     newSocket.on('product-deleted', invalidateProductQueries);
@@ -126,6 +140,18 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     newSocket.on('user-created', invalidateUserQueries);
     newSocket.on('user-updated', invalidateUserQueries);
     newSocket.on('user-deleted', invalidateUserQueries);
+    newSocket.on('role-created', () => {
+      queryClient.invalidateQueries({ queryKey: ['roles'] });
+      refreshCurrentUser();
+    });
+    newSocket.on('role-updated', () => {
+      queryClient.invalidateQueries({ queryKey: ['roles'] });
+      refreshCurrentUser();
+    });
+    newSocket.on('role-deleted', () => {
+      queryClient.invalidateQueries({ queryKey: ['roles'] });
+      refreshCurrentUser();
+    });
     return () => {
       newSocket.disconnect();
     };
@@ -159,3 +185,5 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     </SocketContext.Provider>
   );
 };
+
+

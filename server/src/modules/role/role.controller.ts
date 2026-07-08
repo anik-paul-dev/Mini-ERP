@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import roleService from './role.service';
 import catchAsync from '../../utils/catchAsync';
 import ApiResponse from '../../utils/ApiResponse';
+import { getIO } from '../../config/socket';
 
 type PublicIdParams = { publicId: string };
 
@@ -42,3 +43,4 @@ class RoleController {
 }
 
 export default new RoleController();
+

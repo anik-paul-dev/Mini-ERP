@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useApi } from '../../hooks/useApi';
 import StatCard from '../../components/ui/StatCard';
-import { Package, Users, ShoppingCart, DollarSign, AlertCircle } from 'lucide-react';
+import { Package, Users, ShoppingCart, DollarSign, AlertCircle, XCircle } from 'lucide-react';
 import { formatCurrency, formatDate } from '../../utils/helpers';
 import { DashboardStats } from '../../types';
 import { Skeleton } from '../../components/ui/Skeleton';
@@ -18,7 +18,7 @@ const Dashboard = () => {
     return (
       <div className="space-y-6">
         <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
           {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-32 w-full" />)}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -34,7 +34,7 @@ const Dashboard = () => {
       <h1 className="text-2xl font-bold text-gray-900">Employee Dashboard</h1>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
         <StatCard 
           title="Total Sales" 
           value={formatCurrency(stats?.totalSalesAmount || 0)} 
@@ -44,6 +44,16 @@ const Dashboard = () => {
           title="Total Orders" 
           value={stats?.totalSalesCount || 0} 
           icon={<ShoppingCart size={24} />} 
+        />
+        <StatCard 
+          title="Canceled Sales" 
+          value={stats?.canceledSalesCount || 0} 
+          icon={<XCircle size={24} />} 
+        />
+        <StatCard 
+          title="Deducted Amount" 
+          value={formatCurrency(stats?.deductedSalesAmount || 0)} 
+          icon={<DollarSign size={24} />} 
         />
         <StatCard 
           title="Total Products" 
@@ -71,8 +81,9 @@ const Dashboard = () => {
                   <p className="text-xs text-gray-500">{formatDate(sale.createdAt)}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-bold text-brand-600">{formatCurrency(sale.grandTotal)}</p>
+                  <p className={`text-sm font-bold ${sale.status === 'canceled' ? 'text-red-600 line-through' : 'text-brand-600'}`}>{formatCurrency(sale.grandTotal)}</p>
                   <p className="text-xs text-gray-500">ID: {sale.publicId.substring(0, 8)}</p>
+                  {sale.status === 'canceled' && <p className="text-xs font-medium text-red-600">Canceled</p>}
                 </div>
               </div>
             ))}
@@ -123,4 +134,9 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+
+
+
+
 

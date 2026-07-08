@@ -13,7 +13,7 @@ const forgotPasswordSchema = z.object({
 type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
 
 const ForgotPassword = () => {
-  const { loading } = useApi();
+  const { post, loading } = useApi();
   const [isSuccess, setIsSuccess] = useState(false);
 
   const {
@@ -96,5 +96,6 @@ const ForgotPassword = () => {
 };
 
 export default ForgotPassword;
+
 
 

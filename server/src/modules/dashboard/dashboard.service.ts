@@ -6,7 +6,7 @@ import { cache } from '../../config/redis';
 class DashboardService {
   async getStatistics() {
     const cacheKey = 'dashboard:stats';
-    
+
     // Try cache
     const cachedStats = await cache.get(cacheKey);
     if (cachedStats) {
@@ -16,23 +16,36 @@ class DashboardService {
     // Calculate stats
     const totalProducts = await Product.countDocuments();
     const totalCustomers = await Customer.countDocuments();
-    
-    // Aggregate total sales amount
-    const salesResult = await Sale.aggregate([
+
+    const activeSalesResult = await Sale.aggregate([
+      { $match: { status: { $ne: 'canceled' } } },
       {
         $group: {
           _id: null,
           totalAmount: { $sum: '$grandTotal' },
-          count: { $sum: 1 }
-        }
-      }
+          count: { $sum: 1 },
+        },
+      },
     ]);
-    
-    const totalSalesAmount = salesResult.length > 0 ? salesResult[0].totalAmount : 0;
-    const totalSalesCount = salesResult.length > 0 ? salesResult[0].count : 0;
+
+    const canceledSalesResult = await Sale.aggregate([
+      { $match: { status: 'canceled' } },
+      {
+        $group: {
+          _id: null,
+          totalAmount: { $sum: '$grandTotal' },
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const totalSalesAmount = activeSalesResult.length > 0 ? activeSalesResult[0].totalAmount : 0;
+    const totalSalesCount = activeSalesResult.length > 0 ? activeSalesResult[0].count : 0;
+    const canceledSalesAmount = canceledSalesResult.length > 0 ? canceledSalesResult[0].totalAmount : 0;
+    const canceledSalesCount = canceledSalesResult.length > 0 ? canceledSalesResult[0].count : 0;
 
     const lowStockProductsCount = await Product.countDocuments({ stockQuantity: { $lt: 5 } });
-    
+
     // Get low stock products details
     const lowStockProducts = await Product.find({ stockQuantity: { $lt: 5 } })
       .select('name sku stockQuantity publicId image')
@@ -40,7 +53,7 @@ class DashboardService {
 
     // Get recent sales
     const recentSales = await Sale.find()
-      .select('customerName grandTotal createdAt publicId')
+      .select('customerName grandTotal status createdAt publicId')
       .sort({ createdAt: -1 })
       .limit(5);
 
@@ -49,9 +62,12 @@ class DashboardService {
       totalCustomers,
       totalSalesCount,
       totalSalesAmount,
+      canceledSalesCount,
+      canceledSalesAmount,
+      deductedSalesAmount: canceledSalesAmount,
       lowStockProductsCount,
       lowStockProducts,
-      recentSales
+      recentSales,
     };
 
     // Set cache (5 minutes)
@@ -59,7 +75,7 @@ class DashboardService {
 
     return stats;
   }
-  
+
   async invalidateCache() {
     await cache.del('dashboard:stats');
   }

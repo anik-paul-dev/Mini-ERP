@@ -39,6 +39,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     checkAuth();
   }, []);
 
+
+  useEffect(() => {
+    const refreshAuthUser = async () => {
+      if (localStorage.getItem('isAuthenticated') !== 'true') return;
+      try {
+        const response = await apiClient.get('/auth/me');
+        setUser(response.data.data);
+      } catch {
+        setUser(null);
+        localStorage.removeItem('isAuthenticated');
+      }
+    };
+
+    window.addEventListener('auth:refresh', refreshAuthUser);
+    return () => window.removeEventListener('auth:refresh', refreshAuthUser);
+  }, []);
   const login = (userData: User) => {
     setUser(userData);
     localStorage.setItem('isAuthenticated', 'true');
@@ -73,3 +89,4 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
+

@@ -80,6 +80,7 @@ function App() {
               <Route path="/admin/customers/:id/edit" element={<AdminCustomerForm />} />
               <Route path="/admin/sales" element={<AdminSales />} />
               <Route path="/admin/sales/new" element={<AdminSaleForm />} />
+              <Route path="/admin/sales/:id/edit" element={<AdminSaleForm />} />
               <Route path="/admin/users" element={<AdminUsers />} />
               <Route path="/admin/users/new" element={<AdminUserForm />} />
               <Route path="/admin/users/:id/edit" element={<AdminUserForm />} />
@@ -104,6 +105,7 @@ function App() {
               <Route path="/manager/customers/:id/edit" element={<ManagerCustomerForm />} />
               <Route path="/manager/sales" element={<ManagerSales />} />
               <Route path="/manager/sales/new" element={<ManagerSaleForm />} />
+              <Route path="/manager/sales/:id/edit" element={<ManagerSaleForm />} />
               <Route path="/manager/sales/:id" element={<SaleDetail />} />
               <Route path="/manager/profile" element={<Profile />} />
             </Route>
@@ -116,6 +118,7 @@ function App() {
               <Route path="/employee/products" element={<EmployeeProducts />} />
               <Route path="/employee/sales" element={<EmployeeSales />} />
               <Route path="/employee/sales/new" element={<EmployeeSaleForm />} />
+              <Route path="/employee/sales/:id/edit" element={<EmployeeSaleForm />} />
               <Route path="/employee/sales/:id" element={<SaleDetail />} />
               <Route path="/employee/profile" element={<Profile />} />
             </Route>
@@ -131,3 +134,5 @@ function App() {
 }
 
 export default App;
+
+

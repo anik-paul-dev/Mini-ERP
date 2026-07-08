@@ -13,3 +13,15 @@ export const createSaleSchema = z.object({
       .min(1, 'At least one item is required'),
   }),
 });
+export const updateSaleSchema = createSaleSchema.extend({
+  params: z.object({
+    publicId: z.string().min(1),
+  }),
+});
+
+export const salePublicIdSchema = z.object({
+  params: z.object({
+    publicId: z.string().min(1),
+  }),
+});
+

@@ -30,11 +30,43 @@ class SaleController {
   createSale = catchAsync(async (req: Request, res: Response) => {
     const user = { _id: req.user!._id, name: req.user!.name || 'Unknown' };
     const sale = await saleService.createSale(req.body, user);
-    
+
     await dashboardService.invalidateCache();
-    getIO().emit('sale-created', { saleId: sale.publicId, grandTotal: sale.grandTotal, customerName: sale.customerName });
-    
+    getIO().emit('sale-changed', { action: 'created', saleId: sale.publicId });
+
     res.status(201).json(ApiResponse.created(sale, 'Sale created successfully'));
+  });
+
+  updateSale = catchAsync(async (req: Request<PublicIdParams>, res: Response) => {
+    const user = { _id: req.user!._id, name: req.user!.name || 'Unknown' };
+    const sale = await saleService.updateSale(req.params.publicId, req.body, user);
+
+    await dashboardService.invalidateCache();
+    getIO().emit('sale-updated', { saleId: sale.publicId, grandTotal: sale.grandTotal, customerName: sale.customerName });
+    getIO().emit('sale-changed', { action: 'updated', saleId: sale.publicId });
+
+    res.status(200).json(ApiResponse.success(sale, 'Sale updated successfully'));
+  });
+
+  cancelSale = catchAsync(async (req: Request<PublicIdParams>, res: Response) => {
+    const user = { _id: req.user!._id, name: req.user!.name || 'Unknown' };
+    const sale = await saleService.cancelSale(req.params.publicId, user);
+
+    await dashboardService.invalidateCache();
+    getIO().emit('sale-canceled', { saleId: sale.publicId, grandTotal: sale.grandTotal, customerName: sale.customerName });
+    getIO().emit('sale-changed', { action: 'canceled', saleId: sale.publicId });
+
+    res.status(200).json(ApiResponse.success(sale, 'Sale canceled successfully'));
+  });
+
+  deleteSale = catchAsync(async (req: Request<PublicIdParams>, res: Response) => {
+    await saleService.deleteSale(req.params.publicId, { _id: req.user!._id, name: req.user!.name || 'Unknown' });
+
+    await dashboardService.invalidateCache();
+    getIO().emit('sale-deleted', { saleId: req.params.publicId });
+    getIO().emit('sale-changed', { action: 'deleted', saleId: req.params.publicId });
+
+    res.status(200).json(ApiResponse.success(null, 'Sale deleted successfully'));
   });
 
   exportSales = catchAsync(async (req: Request, res: Response) => {
@@ -47,3 +79,4 @@ class SaleController {
 }
 
 export default new SaleController();
+

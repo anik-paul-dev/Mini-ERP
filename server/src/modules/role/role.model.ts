@@ -23,6 +23,11 @@ export const ALL_PERMISSIONS = [
   'customers:delete',
   'sales:create',
   'sales:read',
+  'sales:update',
+  'sales:delete',
+  'sales:cancel',
+  'sales:export',
+  'activities:read',
   'users:create',
   'users:read',
   'users:update',
@@ -81,3 +86,4 @@ const roleSchema = new Schema<IRole>(
 
 const Role = mongoose.model<IRole>('Role', roleSchema);
 export default Role;
+
