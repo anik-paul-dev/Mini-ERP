@@ -1,6 +1,6 @@
 import express, { Express, Request, Response } from 'express';
 import http from 'http';
-import cors from 'cors';
+import cors, { CorsOptions } from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
@@ -27,10 +27,38 @@ import activityRoutes from './modules/activity/activity.routes';
 dotenv.config();
 
 const app: Express = express();
-const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173')
-  .split(',')
+
+const normalizeOrigin = (origin: string): string => {
+  try {
+    return new URL(origin).origin;
+  } catch {
+    return origin.replace(/\/+$/, '');
+  }
+};
+
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://mini-erp-khaki-six.vercel.app',
+  ...(process.env.CLIENT_URL || '').split(','),
+]
   .map((origin) => origin.trim())
-  .filter(Boolean);
+  .filter(Boolean)
+  .map(normalizeOrigin);
+
+const corsOptions: CorsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(normalizeOrigin(origin))) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error(`Origin ${origin} is not allowed by CORS`));
+  },
+  credentials: true,
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 204,
+};
 
 // Connect to databases & external services
 connectDB();
@@ -39,17 +67,8 @@ connectRedis();
 
 // Middleware
 app.use(helmet()); // Security HTTP headers
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-      return;
-    }
-
-    callback(new Error(`Origin ${origin} is not allowed by CORS`));
-  },
-  credentials: true,
-}));
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 app.use(generalLimiter); // Apply general rate limiting
@@ -67,9 +86,13 @@ app.use(`${API_PREFIX}/dashboard`, dashboardRoutes);
 app.use(`${API_PREFIX}/chat`, chatRoutes);
 app.use(`${API_PREFIX}/activities`, activityRoutes);
 
-// Health check
+// Health checks
+app.get('/', (_req: Request, res: Response) => {
+  res.status(200).json({ success: true, status: 'ok', service: 'mini-erp-server' });
+});
+
 app.get('/health', (_req: Request, res: Response) => {
-  res.status(200).json({ status: 'ok', timestamp: new Date() });
+  res.status(200).json({ success: true, status: 'ok', timestamp: new Date() });
 });
 
 // 404 handler

@@ -21,10 +21,22 @@ const parseCookies = (cookieHeader?: string): Record<string, string> => {
   }, {});
 };
 
-const getSocketOrigins = () => (process.env.CLIENT_URL || 'http://localhost:5173')
-  .split(',')
+const normalizeOrigin = (origin: string): string => {
+  try {
+    return new URL(origin).origin;
+  } catch {
+    return origin.replace(/\/+$/, '');
+  }
+};
+
+const getSocketOrigins = () => [
+  'http://localhost:5173',
+  'https://mini-erp-khaki-six.vercel.app',
+  ...(process.env.CLIENT_URL || '').split(','),
+]
   .map((origin) => origin.trim())
-  .filter(Boolean);
+  .filter(Boolean)
+  .map(normalizeOrigin);
 
 const initSocket = (httpServer: HttpServer): Server => {
   if (process.env.VERCEL) {
