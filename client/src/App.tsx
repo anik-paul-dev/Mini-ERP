@@ -13,10 +13,12 @@ import RoleGuard from './components/guards/RoleGuard';
 import Login from './pages/public/Login';
 import ForgotPassword from './pages/public/ForgotPassword';
 import ResetPassword from './pages/public/ResetPassword';
+import PublicSite from './pages/public/PublicSite';
 
 // Shared Pages
 import Profile from './pages/shared/Profile';
 import SaleDetail from './pages/shared/SaleDetail';
+import ErpResourcePage from './pages/shared/ErpResourcePage';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/Dashboard';
@@ -51,10 +53,20 @@ import EmployeeSaleForm from './pages/employee/SaleForm';
 import RoleRedirect from './components/guards/RoleRedirect.tsx';
 
 function App() {
+  const managerWorkspaceRoles = ['Manager', 'Procurement Officer', 'Finance Officer', 'Project Lead', 'Asset Manager', 'Support Agent'];
+
   return (
     <BrowserRouter>
       <Toaster position="top-right" />
       <Routes>
+        <Route path="/" element={<PublicSite />} />
+        <Route path="/home" element={<PublicSite />} />
+        <Route path="/features" element={<PublicSite />} />
+        <Route path="/solutions" element={<PublicSite />} />
+        <Route path="/pricing" element={<PublicSite />} />
+        <Route path="/resources" element={<PublicSite />} />
+        <Route path="/contact" element={<PublicSite />} />
+
         {/* Public Routes */}
         <Route element={<PublicLayout />}>
           <Route path="/login" element={<Login />} />
@@ -65,8 +77,8 @@ function App() {
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
           
-          {/* Root redirect based on role */}
-          <Route path="/" element={<RoleRedirect />} />
+          {/* Authenticated redirect based on role */}
+          <Route path="/app" element={<RoleRedirect />} />
 
           {/* Admin Routes */}
           <Route element={<RoleGuard allowedRoles={['Admin']} />}>
@@ -90,11 +102,18 @@ function App() {
               <Route path="/admin/activities" element={<AdminActivityLog />} />
               <Route path="/admin/profile" element={<Profile />} />
               <Route path="/admin/sales/:id" element={<SaleDetail />} />
+              <Route path="/admin/suppliers" element={<ErpResourcePage />} />
+              <Route path="/admin/purchases" element={<ErpResourcePage />} />
+              <Route path="/admin/expenses" element={<ErpResourcePage />} />
+              <Route path="/admin/projects" element={<ErpResourcePage />} />
+              <Route path="/admin/inquiries" element={<ErpResourcePage />} />
+              <Route path="/admin/assets" element={<ErpResourcePage />} />
+              <Route path="/admin/tickets" element={<ErpResourcePage />} />
             </Route>
           </Route>
 
           {/* Manager Routes */}
-          <Route element={<RoleGuard allowedRoles={['Manager']} />}>
+          <Route element={<RoleGuard allowedRoles={managerWorkspaceRoles} />}>
             <Route element={<DashboardLayout />}>
               <Route path="/manager" element={<ManagerDashboard />} />
               <Route path="/manager/products" element={<ManagerProducts />} />
@@ -108,6 +127,12 @@ function App() {
               <Route path="/manager/sales/:id/edit" element={<ManagerSaleForm />} />
               <Route path="/manager/sales/:id" element={<SaleDetail />} />
               <Route path="/manager/profile" element={<Profile />} />
+              <Route path="/manager/suppliers" element={<ErpResourcePage />} />
+              <Route path="/manager/purchases" element={<ErpResourcePage />} />
+              <Route path="/manager/expenses" element={<ErpResourcePage />} />
+              <Route path="/manager/projects" element={<ErpResourcePage />} />
+              <Route path="/manager/assets" element={<ErpResourcePage />} />
+              <Route path="/manager/tickets" element={<ErpResourcePage />} />
             </Route>
           </Route>
 
@@ -121,6 +146,10 @@ function App() {
               <Route path="/employee/sales/:id/edit" element={<EmployeeSaleForm />} />
               <Route path="/employee/sales/:id" element={<SaleDetail />} />
               <Route path="/employee/profile" element={<Profile />} />
+              <Route path="/employee/expenses" element={<ErpResourcePage />} />
+              <Route path="/employee/projects" element={<ErpResourcePage />} />
+              <Route path="/employee/assets" element={<ErpResourcePage />} />
+              <Route path="/employee/tickets" element={<ErpResourcePage />} />
             </Route>
           </Route>
 

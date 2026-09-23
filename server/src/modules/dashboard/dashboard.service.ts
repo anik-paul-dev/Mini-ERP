@@ -1,6 +1,13 @@
 import Product from '../product/product.model';
 import Customer from '../customer/customer.model';
 import Sale from '../sale/sale.model';
+import Supplier from '../supplier/supplier.model';
+import Purchase from '../purchase/purchase.model';
+import Expense from '../expense/expense.model';
+import Project from '../project/project.model';
+import Inquiry from '../inquiry/inquiry.model';
+import Asset from '../asset/asset.model';
+import Ticket from '../ticket/ticket.model';
 import { cache } from '../../config/redis';
 
 class DashboardService {
@@ -16,6 +23,13 @@ class DashboardService {
     // Calculate stats
     const totalProducts = await Product.countDocuments();
     const totalCustomers = await Customer.countDocuments();
+    const totalSuppliers = await Supplier.countDocuments();
+    const openPurchases = await Purchase.countDocuments({ status: { $in: ['draft', 'ordered'] } });
+    const pendingExpenses = await Expense.countDocuments({ status: 'pending' });
+    const activeProjects = await Project.countDocuments({ status: { $in: ['planning', 'active'] } });
+    const newInquiries = await Inquiry.countDocuments({ status: 'new' });
+    const assignedAssets = await Asset.countDocuments({ status: 'assigned' });
+    const openTickets = await Ticket.countDocuments({ status: { $in: ['open', 'in_progress'] } });
 
     const activeSalesResult = await Sale.aggregate([
       { $match: { status: { $ne: 'canceled' } } },
@@ -66,6 +80,13 @@ class DashboardService {
       canceledSalesAmount,
       deductedSalesAmount: canceledSalesAmount,
       lowStockProductsCount,
+      totalSuppliers,
+      openPurchases,
+      pendingExpenses,
+      activeProjects,
+      newInquiries,
+      assignedAssets,
+      openTickets,
       lowStockProducts,
       recentSales,
     };

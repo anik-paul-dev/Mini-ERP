@@ -4,7 +4,7 @@ import { nanoid } from 'nanoid';
 export interface IActivity extends Document {
   publicId: string;
   action: 'create' | 'update' | 'delete';
-  entityType: 'product' | 'sale' | 'customer' | 'user' | 'role';
+  entityType: 'product' | 'sale' | 'customer' | 'user' | 'role' | 'supplier' | 'purchase' | 'expense' | 'project' | 'asset' | 'ticket';
   entityId: string;
   entityName: string;
   performedBy: mongoose.Types.ObjectId;
@@ -29,7 +29,7 @@ const activitySchema = new Schema<IActivity>(
     },
     entityType: {
       type: String,
-      enum: ['product', 'sale', 'customer', 'user', 'role'],
+      enum: ['product', 'sale', 'customer', 'user', 'role', 'supplier', 'purchase', 'expense', 'project', 'asset', 'ticket'],
       required: true,
     },
     entityId: {

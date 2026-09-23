@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { useAuth } from '../../hooks/useAuth';
 import { useApi } from '../../hooks/useApi';
 import PasswordStrength from '../../components/ui/PasswordStrength';
+import { Eye, EyeOff } from 'lucide-react';
 
 const profileSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -26,6 +27,11 @@ const Profile = () => {
   const { user, login } = useAuth();
   const { put, post, loading } = useApi();
   const [activeTab, setActiveTab] = useState<'profile' | 'password'>('profile');
+  const [visiblePasswords, setVisiblePasswords] = useState({
+    currentPassword: false,
+    newPassword: false,
+    confirmPassword: false,
+  });
 
   const {
     register: registerProfile,
@@ -47,6 +53,10 @@ const Profile = () => {
   });
 
   const newPasswordValue = watchPassword('newPassword');
+
+  const togglePasswordVisibility = (field: keyof typeof visiblePasswords) => {
+    setVisiblePasswords((prev) => ({ ...prev, [field]: !prev[field] }));
+  };
 
   useEffect(() => {
     if (user) {
@@ -160,24 +170,42 @@ const Profile = () => {
             <form onSubmit={handleSubmitPassword(onPasswordSubmit)} className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-slate-300">Current Password</label>
-                <div className="mt-1">
+                <div className="mt-1 relative">
                   <input
-                    type="password"
+                    type={visiblePasswords.currentPassword ? 'text' : 'password'}
                     {...registerPassword('currentPassword')}
-                    className={`input-field ${passwordErrors.currentPassword ? 'border-rose-500 focus:ring-rose-500' : ''}`}
+                    className={`input-field pr-11 ${passwordErrors.currentPassword ? 'border-rose-500 focus:ring-rose-500' : ''}`}
                   />
+                  <button
+                    type="button"
+                    onClick={() => togglePasswordVisibility('currentPassword')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-400 transition-colors hover:text-brand-300"
+                    title={visiblePasswords.currentPassword ? 'Hide password' : 'Show password'}
+                    aria-label={visiblePasswords.currentPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {visiblePasswords.currentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
                   {passwordErrors.currentPassword && <p className="mt-1 text-sm text-rose-400">{passwordErrors.currentPassword.message}</p>}
                 </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-slate-300">New Password</label>
-                <div className="mt-1">
+                <div className="mt-1 relative">
                   <input
-                    type="password"
+                    type={visiblePasswords.newPassword ? 'text' : 'password'}
                     {...registerPassword('newPassword')}
-                    className={`input-field ${passwordErrors.newPassword ? 'border-rose-500 focus:ring-rose-500' : ''}`}
+                    className={`input-field pr-11 ${passwordErrors.newPassword ? 'border-rose-500 focus:ring-rose-500' : ''}`}
                   />
+                  <button
+                    type="button"
+                    onClick={() => togglePasswordVisibility('newPassword')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-400 transition-colors hover:text-brand-300"
+                    title={visiblePasswords.newPassword ? 'Hide password' : 'Show password'}
+                    aria-label={visiblePasswords.newPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {visiblePasswords.newPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
                   <PasswordStrength password={newPasswordValue} />
                   {passwordErrors.newPassword && <p className="mt-1 text-sm text-rose-400">{passwordErrors.newPassword.message}</p>}
                 </div>
@@ -185,12 +213,21 @@ const Profile = () => {
 
               <div>
                 <label className="block text-sm font-medium text-slate-300">Confirm New Password</label>
-                <div className="mt-1">
+                <div className="mt-1 relative">
                   <input
-                    type="password"
+                    type={visiblePasswords.confirmPassword ? 'text' : 'password'}
                     {...registerPassword('confirmPassword')}
-                    className={`input-field ${passwordErrors.confirmPassword ? 'border-rose-500 focus:ring-rose-500' : ''}`}
+                    className={`input-field pr-11 ${passwordErrors.confirmPassword ? 'border-rose-500 focus:ring-rose-500' : ''}`}
                   />
+                  <button
+                    type="button"
+                    onClick={() => togglePasswordVisibility('confirmPassword')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-400 transition-colors hover:text-brand-300"
+                    title={visiblePasswords.confirmPassword ? 'Hide password' : 'Show password'}
+                    aria-label={visiblePasswords.confirmPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {visiblePasswords.confirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
                   {passwordErrors.confirmPassword && <p className="mt-1 text-sm text-rose-400">{passwordErrors.confirmPassword.message}</p>}
                 </div>
               </div>

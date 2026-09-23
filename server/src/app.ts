@@ -22,6 +22,13 @@ import saleRoutes from './modules/sale/sale.routes';
 import dashboardRoutes from './modules/dashboard/dashboard.routes';
 import chatRoutes from './modules/chat/chat.routes';
 import activityRoutes from './modules/activity/activity.routes';
+import supplierRoutes from './modules/supplier/supplier.routes';
+import purchaseRoutes from './modules/purchase/purchase.routes';
+import expenseRoutes from './modules/expense/expense.routes';
+import projectRoutes from './modules/project/project.routes';
+import inquiryRoutes from './modules/inquiry/inquiry.routes';
+import assetRoutes from './modules/asset/asset.routes';
+import ticketRoutes from './modules/ticket/ticket.routes';
 
 // Load env vars
 dotenv.config();
@@ -85,6 +92,13 @@ app.use(`${API_PREFIX}/sales`, saleRoutes);
 app.use(`${API_PREFIX}/dashboard`, dashboardRoutes);
 app.use(`${API_PREFIX}/chat`, chatRoutes);
 app.use(`${API_PREFIX}/activities`, activityRoutes);
+app.use(`${API_PREFIX}/suppliers`, supplierRoutes);
+app.use(`${API_PREFIX}/purchases`, purchaseRoutes);
+app.use(`${API_PREFIX}/expenses`, expenseRoutes);
+app.use(`${API_PREFIX}/projects`, projectRoutes);
+app.use(`${API_PREFIX}/inquiries`, inquiryRoutes);
+app.use(`${API_PREFIX}/assets`, assetRoutes);
+app.use(`${API_PREFIX}/tickets`, ticketRoutes);
 
 // Health checks
 app.get('/', (_req: Request, res: Response) => {

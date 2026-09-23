@@ -10,7 +10,14 @@ import {
   Activity,
   User,
   LogOut,
-  X
+  X,
+  Truck,
+  ClipboardList,
+  HandCoins,
+  BriefcaseBusiness,
+  FileQuestion,
+  Laptop,
+  LifeBuoy
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -18,12 +25,12 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ onClose }: SidebarProps) => {
-  const { user, logout } = useAuth();
+  const { user, logout, hasPermission } = useAuth();
   const navigate = useNavigate();
 
   if (!user) return null;
 
-  const rolePath = user.roleName.toLowerCase();
+  const rolePath = user.roleName === 'Admin' ? 'admin' : user.roleName === 'Employee' ? 'employee' : 'manager';
 
   const handleLogout = async () => {
     await logout();
@@ -35,43 +42,99 @@ const Sidebar = ({ onClose }: SidebarProps) => {
       title: 'Dashboard',
       icon: <LayoutDashboard size={20} />,
       path: `/${rolePath}`,
-      roles: ['Admin', 'Manager', 'Employee']
+      roles: ['Admin', 'Manager', 'Employee'],
+      permission: 'dashboard:read'
     },
     {
       title: 'Products',
       icon: <Package size={20} />,
       path: `/${rolePath}/products`,
-      roles: ['Admin', 'Manager', 'Employee']
+      roles: ['Admin', 'Manager', 'Employee'],
+      permission: 'products:read'
     },
     {
       title: 'Customers',
       icon: <Users size={20} />,
       path: `/${rolePath}/customers`,
-      roles: ['Admin', 'Manager']
+      roles: ['Admin', 'Manager'],
+      permission: 'customers:read'
     },
     {
       title: 'Sales',
       icon: <ShoppingCart size={20} />,
       path: `/${rolePath}/sales`,
-      roles: ['Admin', 'Manager', 'Employee']
+      roles: ['Admin', 'Manager', 'Employee'],
+      permission: 'sales:read'
     },
     {
       title: 'Users',
       icon: <UserCog size={20} />,
       path: `/${rolePath}/users`,
-      roles: ['Admin']
+      roles: ['Admin'],
+      permission: 'users:read'
     },
     {
       title: 'Roles & Permissions',
       icon: <Shield size={20} />,
       path: `/${rolePath}/roles`,
-      roles: ['Admin']
+      roles: ['Admin'],
+      permission: 'roles:read'
     },
     {
       title: 'Activity Log',
       icon: <Activity size={20} />,
       path: `/${rolePath}/activities`,
-      roles: ['Admin']
+      roles: ['Admin'],
+      permission: 'activities:read'
+    },
+    {
+      title: 'Suppliers',
+      icon: <Truck size={20} />,
+      path: `/${rolePath}/suppliers`,
+      roles: ['Admin', 'Manager'],
+      permission: 'suppliers:read'
+    },
+    {
+      title: 'Purchase Orders',
+      icon: <ClipboardList size={20} />,
+      path: `/${rolePath}/purchases`,
+      roles: ['Admin', 'Manager'],
+      permission: 'purchases:read'
+    },
+    {
+      title: 'Expenses',
+      icon: <HandCoins size={20} />,
+      path: `/${rolePath}/expenses`,
+      roles: ['Admin', 'Manager', 'Employee'],
+      permission: 'expenses:read'
+    },
+    {
+      title: 'Projects & Tasks',
+      icon: <BriefcaseBusiness size={20} />,
+      path: `/${rolePath}/projects`,
+      roles: ['Admin', 'Manager', 'Employee'],
+      permission: 'projects:read'
+    },
+    {
+      title: 'Assets',
+      icon: <Laptop size={20} />,
+      path: `/${rolePath}/assets`,
+      roles: ['Admin', 'Manager', 'Employee'],
+      permission: 'assets:read'
+    },
+    {
+      title: 'Service Tickets',
+      icon: <LifeBuoy size={20} />,
+      path: `/${rolePath}/tickets`,
+      roles: ['Admin', 'Manager', 'Employee'],
+      permission: 'tickets:read'
+    },
+    {
+      title: 'Public Inquiries',
+      icon: <FileQuestion size={20} />,
+      path: `/${rolePath}/inquiries`,
+      roles: ['Admin'],
+      permission: 'inquiries:read'
     },
     {
       title: 'Profile',
@@ -81,12 +144,12 @@ const Sidebar = ({ onClose }: SidebarProps) => {
     }
   ];
 
-  const allowedItems = menuItems.filter(item => item.roles.includes(user.roleName));
+  const allowedItems = menuItems.filter(item => item.roles.includes(user.roleName) || (item.permission && hasPermission(item.permission)));
 
   return (
     <div className="flex flex-col w-64 bg-slate-900 h-full text-white transition-all duration-300 shadow-xl print:hidden">
       <div className="flex items-center justify-between h-16 border-b border-slate-800 px-4">
-        <h1 className="text-xl font-bold bg-gradient-to-r from-brand-400 to-brand-300 bg-clip-text text-transparent">Mini ERP</h1>
+        <h1 className="text-xl font-bold bg-gradient-to-r from-brand-400 to-brand-300 bg-clip-text text-transparent">NexoraOps</h1>
         {onClose && (
           <button
             onClick={onClose}

@@ -5,7 +5,7 @@ import QueryBuilder from '../../utils/QueryBuilder';
 class ActivityService {
   async logActivity(data: {
     action: 'create' | 'update' | 'delete';
-    entityType: 'product' | 'sale' | 'customer' | 'user' | 'role';
+    entityType: 'product' | 'sale' | 'customer' | 'user' | 'role' | 'supplier' | 'purchase' | 'expense' | 'project' | 'asset' | 'ticket';
     entityId: string;
     entityName: string;
     performedBy: mongoose.Types.ObjectId;

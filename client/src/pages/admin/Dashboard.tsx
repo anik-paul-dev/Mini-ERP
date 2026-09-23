@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useApi } from '../../hooks/useApi';
 import StatCard from '../../components/ui/StatCard';
-import { Package, Users, ShoppingCart, DollarSign, AlertCircle, XCircle } from 'lucide-react';
+import { Package, Users, ShoppingCart, DollarSign, AlertCircle, XCircle, Truck, ClipboardList, HandCoins, BriefcaseBusiness, FileQuestion, Laptop, LifeBuoy } from 'lucide-react';
 import { formatCurrency, formatDate } from '../../utils/helpers';
 import { DashboardStats } from '../../types';
 import { Skeleton } from '../../components/ui/Skeleton';
@@ -18,7 +18,7 @@ const Dashboard = () => {
     return (
       <div className="space-y-6">
         <h1 className="text-2xl font-bold text-slate-100">Dashboard</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-32 w-full" />)}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -34,7 +34,7 @@ const Dashboard = () => {
       <h1 className="text-2xl font-bold text-slate-100">Dashboard Overview</h1>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         <StatCard 
           title="Total Sales" 
           value={formatCurrency(stats?.totalSalesAmount || 0)} 
@@ -65,6 +65,13 @@ const Dashboard = () => {
           value={stats?.totalCustomers || 0} 
           icon={<Users size={24} />} 
         />
+        <StatCard title="Suppliers" value={stats?.totalSuppliers || 0} icon={<Truck size={24} />} />
+        <StatCard title="Open POs" value={stats?.openPurchases || 0} icon={<ClipboardList size={24} />} />
+        <StatCard title="Pending Expenses" value={stats?.pendingExpenses || 0} icon={<HandCoins size={24} />} />
+        <StatCard title="Active Projects" value={stats?.activeProjects || 0} icon={<BriefcaseBusiness size={24} />} />
+        <StatCard title="New Inquiries" value={stats?.newInquiries || 0} icon={<FileQuestion size={24} />} />
+        <StatCard title="Assigned Assets" value={stats?.assignedAssets || 0} icon={<Laptop size={24} />} />
+        <StatCard title="Open Tickets" value={stats?.openTickets || 0} icon={<LifeBuoy size={24} />} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

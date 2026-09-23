@@ -17,7 +17,7 @@ const RoleRedirect = () => {
     return <Navigate to="/login" replace />;
   }
 
-  const rolePath = user.roleName.toLowerCase();
+  const rolePath = user.roleName === 'Admin' ? 'admin' : user.roleName === 'Employee' ? 'employee' : 'manager';
   return <Navigate to={`/${rolePath}`} replace />;
 };
 

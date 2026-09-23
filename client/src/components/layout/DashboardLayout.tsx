@@ -33,7 +33,7 @@ const DashboardLayout = () => {
         {/* Footer */}
         <footer className="print:hidden border-t border-surface-700/50 bg-surface-900/80 backdrop-blur-sm px-4 sm:px-6 py-3">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
-            <p>&copy; {new Date().getFullYear()} Mini ERP. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} NexoraOps. All rights reserved.</p>
             <p className="flex items-center gap-1">
               <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
               System Online

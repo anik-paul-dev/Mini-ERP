@@ -13,7 +13,8 @@ const PublicLayout = () => {
   }
 
   if (isAuthenticated && user) {
-    return <Navigate to={`/${user.roleName.toLowerCase()}`} replace />;
+    const rolePath = user.roleName === 'Admin' ? 'admin' : user.roleName === 'Employee' ? 'employee' : 'manager';
+    return <Navigate to={`/${rolePath}`} replace />;
   }
 
   return (
@@ -26,4 +27,3 @@ const PublicLayout = () => {
 };
 
 export default PublicLayout;
-

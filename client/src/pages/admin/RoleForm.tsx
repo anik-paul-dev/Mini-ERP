@@ -12,8 +12,16 @@ const PERMISSION_GROUPS = {
   Products: ['products:create', 'products:read', 'products:update', 'products:delete'],
   Customers: ['customers:create', 'customers:read', 'customers:update', 'customers:delete'],
   Sales: ['sales:create', 'sales:read', 'sales:update', 'sales:cancel', 'sales:delete', 'sales:export'],
+  Suppliers: ['suppliers:create', 'suppliers:read', 'suppliers:update', 'suppliers:delete'],
+  Purchases: ['purchases:create', 'purchases:read', 'purchases:update', 'purchases:delete'],
+  Expenses: ['expenses:create', 'expenses:read', 'expenses:update', 'expenses:delete'],
+  Projects: ['projects:create', 'projects:read', 'projects:update', 'projects:delete'],
+  Assets: ['assets:create', 'assets:read', 'assets:update', 'assets:delete'],
+  Tickets: ['tickets:create', 'tickets:read', 'tickets:update', 'tickets:delete'],
+  Inquiries: ['inquiries:read', 'inquiries:update', 'inquiries:delete'],
   Users: ['users:create', 'users:read', 'users:update', 'users:delete'],
   Roles: ['roles:create', 'roles:read', 'roles:update', 'roles:delete'],
+  Activities: ['activities:read'],
   Dashboard: ['dashboard:read'],
 };
 
